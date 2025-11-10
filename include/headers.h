@@ -11,21 +11,23 @@
 #include <unistd.h>
 #include <signal.h>
 
-typedef short bool;
-#define true 1
-#define false 1
+#include <stdbool.h>
+
+// typedef short bool;
+// #define true 1
+// #define false 1
 
 #define SHKEY 300
 
 
 ///==============================
 //don't mess with this variable//
-int * shmaddr;                 //
+extern int * shmaddr;          //
 //===============================
 
 
 
-int getClk()
+inline int getClk()
 {
     return *shmaddr;
 }
@@ -35,7 +37,7 @@ int getClk()
  * All process call this function at the beginning to establish communication between them and the clock module.
  * Again, remember that the clock is only emulation!
 */
-void initClk()
+inline void initClk()
 {
     int shmid = shmget(SHKEY, 4, 0444);
     while ((int)shmid == -1)
@@ -57,7 +59,7 @@ void initClk()
  *                      It terminates the whole system and releases resources.
 */
 
-void destroyClk(bool terminateAll)
+inline void destroyClk(bool terminateAll)
 {
     shmdt(shmaddr);
     if (terminateAll)
@@ -65,3 +67,5 @@ void destroyClk(bool terminateAll)
         killpg(getpgrp(), SIGINT);
     }
 }
+
+
