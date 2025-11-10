@@ -22,7 +22,7 @@
 
 ///==============================
 //don't mess with this variable//
-extern int * shmaddr;          //
+int * shmaddr;                 //
 //===============================
 
 
