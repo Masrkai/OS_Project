@@ -1,5 +1,11 @@
 ## how to run
 
+in case you are using `Nix` please use the shell of `shell.nix` inside the root directory of this project you can do that by running the command
+
+```bash
+nix-shell
+```
+
 you can run the program using `make` provided by `gnumake` package
 
 ```bash
