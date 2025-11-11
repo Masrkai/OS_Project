@@ -27,7 +27,7 @@ int * shmaddr;                 //
 
 
 
-inline int getClk()
+ int getClk()
 {
     return *shmaddr;
 }
@@ -37,7 +37,7 @@ inline int getClk()
  * All process call this function at the beginning to establish communication between them and the clock module.
  * Again, remember that the clock is only emulation!
 */
-inline void initClk()
+ void initClk()
 {
     int shmid = shmget(SHKEY, 4, 0444);
     while ((int)shmid == -1)
@@ -59,7 +59,7 @@ inline void initClk()
  *                      It terminates the whole system and releases resources.
 */
 
-inline void destroyClk(bool terminateAll)
+ void destroyClk(bool terminateAll)
 {
     shmdt(shmaddr);
     if (terminateAll)
