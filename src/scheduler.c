@@ -1,59 +1,17 @@
+#include "../include/schedule.h"
 #include "../include/headers.h"
-#include <math.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/wait.h>
+#include <math.h>
 
+// Global variables (actual definitions)
 #define MAX_PROCESSES 100
-
-// Process states
-typedef enum {
-    READY,
-    RUNNING,
-    BLOCKED,
-    FINISHED
-} ProcessState;
-
-// Process Control Block (PCB)
-typedef struct {
-    int id;
-    int arrivalTime;
-    int runtime;
-    int priority;
-    int remainingTime;
-    int waitingTime;
-    int executionTime;
-    int startTime;
-    int finishTime;
-    int lastStopTime;
-    ProcessState state;
-    pid_t pid;
-    bool started;
-} PCB;
-
-// Queue node for ready queue
-typedef struct QueueNode {
-    PCB* pcb;
-    struct QueueNode* next;
-} QueueNode;
-
-// Ready queue
-typedef struct {
-    QueueNode* head;
-    QueueNode* tail;
-    int size;
-} Queue;
-
-// Message structure for IPC
-typedef struct {
-    long mtype;
-    struct {
-        int id;
-        int arrivalTime;
-        int runtime;
-        int priority;
-    } process;
-} Message;
-
-// Global variables
 int algorithm;
 int quantum;
 int msgqid;
@@ -70,28 +28,6 @@ int finishedCount = 0;
 int quantumCounter = 0;
 FILE* logFile;
 FILE* perfFile;
-
-// Function declarations
-void initQueue(Queue* q);
-void enqueue(Queue* q, PCB* pcb);
-PCB* dequeue(Queue* q);
-PCB* peek(Queue* q);
-bool isEmpty(Queue* q);
-void removeFromQueue(Queue* q, PCB* pcb);
-void scheduleNext();
-void startProcess(PCB* pcb);
-void stopProcess(PCB* pcb);
-void resumeProcess(PCB* pcb);
-void finishProcess(PCB* pcb);
-void handleProcessFinish(int signum);
-void receiveProcesses();
-void selectNextProcess();
-void writeLog(const char* state, PCB* pcb);
-void writePerformanceMetrics();
-void cleanup();
-PCB* selectHPF();
-PCB* selectSJN();
-PCB* selectRR();
 
 int main(int argc, char * argv[])
 {
@@ -316,51 +252,6 @@ void selectNextProcess() {
             resumeProcess(selected);
         }
     }
-}
-
-PCB* selectHPF() {
-    // Find process with highest priority (lowest priority number)
-    QueueNode* node = readyQueue.head;
-    PCB* highest = NULL;
-
-    while (node != NULL) {
-        if (highest == NULL || node->pcb->priority < highest->priority) {
-            highest = node->pcb;
-        } else if (node->pcb->priority == highest->priority) {
-            // Tie-breaking: choose the one that arrived first
-            if (node->pcb->arrivalTime < highest->arrivalTime) {
-                highest = node->pcb;
-            }
-        }
-        node = node->next;
-    }
-
-    return highest;
-}
-
-PCB* selectSJN() {
-    // Find process with shortest remaining time
-    QueueNode* node = readyQueue.head;
-    PCB* shortest = NULL;
-
-    while (node != NULL) {
-        if (shortest == NULL || node->pcb->remainingTime < shortest->remainingTime) {
-            shortest = node->pcb;
-        } else if (node->pcb->remainingTime == shortest->remainingTime) {
-            // Tie-breaking: choose the one that arrived first
-            if (node->pcb->arrivalTime < shortest->arrivalTime) {
-                shortest = node->pcb;
-            }
-        }
-        node = node->next;
-    }
-
-    return shortest;
-}
-
-PCB* selectRR() {
-    // Round Robin: simply take the first process in queue (FCFS)
-    return peek(&readyQueue);
 }
 
 void startProcess(PCB* pcb) {
