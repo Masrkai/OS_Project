@@ -47,7 +47,11 @@ pkgs.mkShell {
     clang-tools #it has clangd
    ];
 
-  #? Let me Explain why is this needed
+  # Ensure CMake can find the compilers
+  CMAKE_C_COMPILER = "${pkgs.gcc}/bin/gcc";
+  CMAKE_CXX_COMPILER = "${pkgs.gcc}/bin/g++";
+
+  #? Let me Explain why kernel_security_bypass.sh is needed
   #? perf utility isn't a package in fact it's a kernel utility in linux
   #? Also it has kernel parameter
   #! /proc/sys/kernel/perf_event_paranoid
@@ -62,18 +66,14 @@ pkgs.mkShell {
   #* Sadly this can't be done in a shell and instead done system-wide so i need you to realize understand and evaluate
   #* the Risks comes with this
 
-  # Ensure CMake can find the compilers
-  CMAKE_C_COMPILER = "${pkgs.gcc}/bin/gcc";
-  CMAKE_CXX_COMPILER = "${pkgs.gcc}/bin/g++";
-
   shellHook = ''
     # Export compiler paths explicitly
     export CC="${pkgs.gcc}/bin/gcc"
     export CXX="${pkgs.gcc}/bin/g++"
 
 
+    ${builtins.readFile ./Scripts/kernel_security_bypass.sh}
   '';
-    # ${builtins.readFile ./Scripts/kernel_security_bypass.sh}
     # ${builtins.readFile ./Scripts/build_release.sh}
     # ${builtins.readFile ./Scripts/build_profiling.sh}
 
