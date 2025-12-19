@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Dark App
+Comment=Elegant dark themed application
+Exec=/full/path/to/darkapp
+Icon=/full/path/to/Images/app_icon.png
+Terminal=false
+Categories=Utility;

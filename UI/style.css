@@ -1,0 +1,58 @@
+window {
+  background-color: #1a1a1a;
+}
+
+headerbar {
+  background-color: #0a0a0a;
+  color: #ffffff;
+  border-bottom: 1px solid #333333;
+}
+
+headerbar button {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin: 4px 0; /* Keeps buttons from touching the top/bottom edge */
+}
+
+
+headerbar button:hover {
+  background-color: #3a3a3a;
+}
+
+headerbar button.close:hover {
+  background-color: #c03030;
+}
+
+headerbar button.minimize:hover {
+  background-color: #3a3a3a;
+}
+
+headerbar button.maximize:hover {
+  background-color: #3a3a3a;
+}
+
+
+headerbar windowcontrols button {
+  background-color: transparent;
+  border: none;
+  border-radius: 999px; /* Makes hover highlights circular */
+  padding: 0;           /* Remove padding so the icon doesn't grow */
+  margin: 0;
+  min-width: 28px;      /* Standard size for control buttons */
+  min-height: 28px;
+}
+
+headerbar windowcontrols button:hover {
+  background-color: #2a2a2a;
+}
+
+headerbar windowcontrols button.close:hover {
+  background-color: #c03030;
+}
+
+* {
+  color: #ffffff;
+}

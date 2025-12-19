@@ -18,6 +18,13 @@ pkgs.mkShell {
     stdenv.cc
     stdenv.cc.cc
 
+
+    gtk4
+    glib
+    pkg-config
+    gobject-introspection
+    bear
+
     unity-test
 
     # Profiling
