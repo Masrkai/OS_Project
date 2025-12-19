@@ -1,7 +1,3 @@
-# Please Note I have a very limited understanding of the inner workings
-# of certain things here I am just using what I have seen necessary for
-# my application feel free to argue or change that as much as you please
-
 { pkgs ? import <nixpkgs> {} }:
 
 let
@@ -74,8 +70,6 @@ pkgs.mkShell {
 
     ${builtins.readFile ./Scripts/kernel_security_bypass.sh}
   '';
-    # ${builtins.readFile ./Scripts/build_release.sh}
-    # ${builtins.readFile ./Scripts/build_profiling.sh}
 
     # ${builtins.readFile ./Scripts/profile.sh}
 
