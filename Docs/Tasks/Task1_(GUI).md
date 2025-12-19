@@ -1,45 +1,43 @@
-### **Task: GUI/WebUI Development with Sciter (C Integration)**
+### **Task: GUI Development with GTK4 (C Integration)**
 
 #### **Background**
-As discussed with **Sama Okasha (TA)**, our project requires a **GUI/WebUI**. Given that our codebase is in **C**, traditional GUI frameworks (like Qt) are not natively compatible. After research, **Sciter** emerged as a viable solution:
+As discussed with **Sama Okasha (TA)**, our project requires a **GUI**. Given our codebase is in **C**, **GTK4** is a robust, cross-platform framework that natively supports C, making it a strong fit for our needs.
 
-- Sciter allows us to build GUIs using **HTML, CSS, and JavaScript**, while embedding the UI in a C application.
-- It bridges the gap between web technologies and native applications.
+- GTK4 allows us to build modern, responsive UIs using C, with extensive documentation and community support.
+- It is widely used and integrates well with Linux, Windows, and macOS.
 
 #### **Challenges**
-- **No prior experience**: None of us have worked with **HTML, CSS, or Sciter** before.
-- **Limited C documentation**: Most Sciter tutorials/examples are for **C++** ([example](https://sciter.com/hello-cpp-tutorial/)), not C.
-- **Fallback plan**: If Sciter proves too complex, we’ll default to **Qt (C++)**, though this also requires adapting to C++.
+- **No prior experience**: None of us have worked with **GTK4** before.
+- **Learning curve**: While GTK4 is powerful, it requires understanding its API and widget system.
+- **Fallback plan**: If GTK4 proves too complex, we’ll revisit alternatives, but GTK4 is the primary focus.
 
 #### **Goals**
-1. **Minimal viable UI**: Use **only HTML and CSS** (avoid JavaScript for simplicity).
-2. **Proof of concept**: Build a basic UI (e.g., a window with buttons/text fields) to validate Sciter’s feasibility with C.
-3. **Document the process**: Share learnings/roadblocks for future reference.
+1. **Minimal viable UI**: Build a basic UI (e.g., a window with buttons/text fields) to validate GTK4’s feasibility with C.
+2. **Proof of concept**: Create a simple application to demonstrate core functionality (e.g., button clicks, text input).
+3. **Document the process**: Share learnings, code snippets, and roadblocks for future reference.
 
 #### **Action Items**
-1. **Setup Sciter for C**:
-   - Download the [Sciter SDK](https://sciter.com/download/) and integrate it with our C project.
-   - Follow the [C++ tutorial](https://sciter.com/hello-cpp-tutorial/) as a reference, adapting it for C.
+1. **Setup GTK4 for C**:
+   - Install GTK4 and its dependencies on your development environment.
+   - Follow the [GTK4 Getting Started Guide](https://docs.gtk.org/gtk4/getting_started.html) to set up a basic project.
 
 2. **Design a simple UI**:
-   - Create a basic HTML/CSS template (e.g., a form or dashboard).
-   - Use Sciter’s API to render the UI from C.
+   - Use GTK4’s widget library to create a basic UI (e.g., a form or dashboard).
+   - Focus on core widgets like `GtkWindow`, `GtkButton`, and `GtkEntry`.
 
 3. **Test and iterate**:
    - Verify UI responsiveness and functionality.
-   - Debug integration issues (e.g., event handling without JS).
+   - Debug integration issues (e.g., signal handling, layout management).
 
 4. **Fallback plan**:
-   - If Sciter fails, research **Qt with C++** and outline migration steps.
+   - If GTK4 proves too challenging, research alternatives like **Qt (C++)** or **IUP**, but prioritize GTK4 for now.
 
 #### **Resources**
-- [Sciter Documentation](https://sciter.com/docs/)
-- [HTML/CSS Crash Course (W3Schools)](https://www.w3schools.com/html/)
-- [Qt for C++ (Backup)](https://www.qt.io/)
+- [GTK4 Getting Started](https://docs.gtk.org/gtk4/getting_started.html)
+- [GTK4 API Reference](https://docs.gtk.org/gtk4/)
+- [GTK4 Tutorial (ToshioCP)](https://toshiocp.github.io/Gtk4-tutorial/)
+- [GTK4 Examples (GitLab)](https://gitlab.gnome.org/GNOME/gtk/-/tree/master/examples)
 
 #### **Notes**
-- This is **experimental**—expect trial and error.
+- This is **experimental** expect trial and error.
 - Prioritize **simplicity** and **documentation** to ease collaboration.
-
----
-**Question for the team**: Should we schedule a quick sync to align on the UI design or Sciter setup? Or does anyone have prior experience with these tools?
