@@ -12,20 +12,26 @@
 
 // Global variables (actual definitions)
 #define MAX_PROCESSES 100
-int algorithm;
-int quantum;
+
 int msgqid;
-PCB processes[MAX_PROCESSES];
-int processCount = 0;
-Queue readyQueue;
-PCB* runningProcess = NULL;
+int algorithm;
+
+int quantum;
 int currentTime = 0;
-int totalWaitingTime = 0;
 int totalRuntime = 0;
-double totalWTA = 0;
-double totalWTASquared = 0;
+int totalWaitingTime = 0;
+
+int processCount = 0;
 int finishedCount = 0;
 int quantumCounter = 0;
+
+double totalWTA = 0;
+double totalWTASquared = 0;
+
+Queue readyQueue;
+PCB* runningProcess = NULL;
+PCB processes[MAX_PROCESSES];
+
 FILE* logFile;
 FILE* perfFile;
 
