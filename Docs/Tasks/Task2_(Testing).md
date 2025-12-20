@@ -1,8 +1,7 @@
-### **Task: Implement Unit Testing with Google Test (gtest)**
+### **Task: Implement Unit Testing with Criterion**
 
 #### **Objective**
-Ensure robust **test coverage** for our project, focusing on:
-
+Ensure robust **test coverage** for our C project, focusing on:
 - **Functional correctness** (unit tests).
 - **Memory safety** (leaks, invalid accesses).
 
@@ -11,44 +10,54 @@ Ensure robust **test coverage** for our project, focusing on:
 ---
 
 #### **Tools & Framework**
-- **Google Test (gtest)**: A C++ testing framework (compatible with C projects via wrappers).
-  - **Why gtest?**
-    - Widely used, well-documented, and integrates with CI/CD pipelines.
-    - Supports assertions, parameterized tests, and death tests.
+- **Criterion**: A modern, lightweight C testing framework.
+  - **Why Criterion?**
+    - Designed for C, avoiding C++ dependencies.
+    - Supports assertions, parameterized tests, and TAP output.
+    - Easy integration with CI/CD pipelines.
 
 ---
 
 #### **Action Items**
 
-1. **Set Up gtest**:
-   - Install gtest for your development environment:
+1. **Set Up Criterion**:
+   - Install Criterion for your development environment:
      ```bash
-     git clone https://github.com/google/googletest.git
-     cd googletest
+     git clone https://github.com/Snaipe/Criterion.git
+     cd Criterion
      mkdir build && cd build
      cmake .. && make
      sudo make install
      ```
-   - Link gtest to your C project (example `CMakeLists.txt` configuration available [here](https://google.github.io/googletest/quickstart-cmake.html)).
+   - **Integrate with Makefile**:
+     Add the following to your `Makefile`:
+     ```makefile
+     CFLAGS += $(shell pkg-config --cflags criterion)
+     LDFLAGS += $(shell pkg-config --libs criterion)
+     ```
+     Example target for tests:
+     ```makefile
+     tests: your_tests
+     your_tests: your_tests.o your_code.o
+         gcc -o your_tests your_tests.o your_code.o $(LDFLAGS)
+     ```
 
 2. **Write Unit Tests**:
    - **Target critical functions**: Focus on core logic, edge cases, and error handling.
    - **Example test structure**:
-     ```cpp
-     #include <gtest/gtest.h>
-     extern "C" {
-       #include "your_code.h"  // Include your C headers
-     }
+     ```c
+     #include <criterion/criterion.h>
+     #include "your_code.h"  // Include your C headers
 
-     TEST(ExampleTestSuite, TestFunction) {
-       int result = your_function(2, 3);
-       ASSERT_EQ(result, 5);
+     Test(ExampleTestSuite, TestFunction) {
+         int result = your_function(2, 3);
+         cr_assert_eq(result, 5, "Expected 5, got %d", result);
      }
      ```
    - **Avoid testing implementation details**: Test behavior, not internal logic.
 
 3. **Integrate with CI/CD** (if applicable):
-   - Add a test script to your pipeline to run gtest automatically on pushes/pull requests.
+   - Add a test script to your pipeline to run Criterion tests automatically on pushes/pull requests.
 
 4. **Document Test Cases**:
    - Add a `README` or comment block in test files to explain:
@@ -59,7 +68,8 @@ Ensure robust **test coverage** for our project, focusing on:
 ---
 
 #### **Test Coverage Goals**
-- **Minimum**: 80% coverage for critical paths (use `gcov`/`lcov` to measure).
+- **Minimum**: 80% coverage for critical paths.
+- **Tools under discussion**: `gcov`, `lcov`, or `gcovr` for coverage measurement.
 - **Prioritize**:
   - Input validation.
   - Boundary conditions (e.g., empty inputs, max values).
@@ -68,12 +78,12 @@ Ensure robust **test coverage** for our project, focusing on:
 ---
 
 #### **Resources**
-- [Google Test Documentation](https://google.github.io/googletest/)
-- [gtest + C Example](https://stackoverflow.com/questions/12703739/how-to-use-googletest-with-c-code)
+- [Criterion Documentation](https://criterion.readthedocs.io/)
+- [Criterion GitHub](https://github.com/Snaipe/Criterion)
 - [Memory Leak Testing (Task2_1.md)](Task2_1(Testing).md)
 
 ---
-**Question for the team**:
-
+**Questions for the Team**:
 - Should we start with a specific module for testing, or does everyone have a preference?
 - Do we need a shared template for test files?
+- Should we proceed with `gcov`/`lcov`/`gcovr` for coverage, or explore alternatives?
