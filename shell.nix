@@ -21,7 +21,8 @@ pkgs.mkShell {
     gobject-introspection
     bear
 
-    unity-test
+    # unity-test
+    criterion
 
     # Profiling
     flamegraph
