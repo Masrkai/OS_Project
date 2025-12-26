@@ -26,7 +26,7 @@ pkgs.mkShell {
 
     # Profiling
     flamegraph
-      kernelPackages.perf # Needed By FlameGraph
+      perf # Needed By FlameGraph
   ];
 
   nativeBuildInputs = with pkgs; [
