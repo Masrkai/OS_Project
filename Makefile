@@ -121,9 +121,12 @@ run:
 
 TESTING_DIR = $(BUILD_DIR)/tests
 
-tests: $(TESTING_DIR)/test_clock
+tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process
 
 $(TESTING_DIR)/test_clock: $(TEST_DIR)/test_clk.c | $(TESTING_DIR)
+	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
+
+$(TESTING_DIR)/test_process: $(TEST_DIR)/test_process.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
 
 $(TESTING_DIR):

@@ -1,59 +1,61 @@
 #include <criterion/criterion.h>
-#include <criterion/redirect.h>
-#include <sys/shm.h>
+#include <criterion/logging.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include <signal.h>
+#include "../include/headers.h"
 
-#include "../include/headers.h" // Assume your code is here
+pid_t clock_pid;
 
-#define TEST_SHKEY 300
-
-int temp_shmid = -1;
-
-// This runs BEFORE every test
-void suite_setup(void) {
-    // Create the shared memory segment so initClk doesn't loop forever
-    temp_shmid = shmget(TEST_SHKEY, sizeof(int), IPC_CREAT | 0666);
-    cr_assert(temp_shmid != -1, "Failed to create shared memory for test");
-    
-    // Initialize the clock value to 0
-    int *addr = shmat(temp_shmid, NULL, 0);
-    *addr = 0;
-    shmdt(addr);
-
-    // Redirect stdout so we can check printfs if needed
-    cr_redirect_stdout();
+// This setup runs before each test to start the clock process
+void setup(void) {
+    clock_pid = fork();
+    if (clock_pid == 0) {
+        // Child process: Execute the clock logic
+        // For testing, we can use execl if clk is compiled, 
+        // or just call a modified main-like function.
+        char *args[] = {"./../release/clk.out", NULL};
+        execv("./../release/clk.out", args);
+        exit(0);
+    }
+    // Give the clock a moment to create the file and SHM
+    sleep(1); 
 }
 
-// This runs AFTER every test
-void suite_teardown(void) {
-    // Clean up the shared memory segment from the OS
-    shmctl(temp_shmid, IPC_RMID, NULL);
+// This teardown runs after each test to clean up
+void teardown(void) {
+    if (clock_pid > 0) {
+        kill(clock_pid, SIGINT);
+        waitpid(clock_pid, NULL, 0);
+    }
+    // Cleanup files just in case the signal handler missed them
+    remove(KEY_FILE);
+    remove(".osclock_marker");
 }
 
-// --------------------------------------------------------
-// TESTS
-// --------------------------------------------------------
-
-Test(clk_suite, test_init_and_get, .init = suite_setup, .fini = suite_teardown) {
+Test(clock_suite, test_clock_initialization, .init = setup, .fini = teardown) {
+    // 1. Test initClk
     initClk();
-    
-    // Check if shmaddr was actually assigned
-    cr_assert_not_null(shmaddr, "shmaddr should not be null after initClk");
-    
-    // Verify initial value
-    cr_assert_eq(getClk(), 0, "getClk should return 0 initially");
-    
-    // Manually change memory and check if getClk reflects it
-    *shmaddr = 42;
-    cr_assert_eq(getClk(), 42, "getClk should reflect changes in shared memory");
+    cr_assert_not_null(shmaddr, "shmaddr should be attached after initClk");
+
+    // 2. Test initial value
+    int initial_time = getClk();
+    cr_expect(initial_time >= 0, "Clock should start at 0 or greater");
+
+    // 3. Test progression (Wait 2 seconds and check if time advanced)
+    sleep(2);
+    int later_time = getClk();
+    cr_assert(later_time > initial_time, "Clock should increment over time. Expected > %d, got %d", initial_time, later_time);
     
     destroyClk(false);
 }
 
-Test(clk_suite, test_destroy_signal, .init = suite_setup, .fini = suite_teardown, .signal = SIGINT) {
-    initClk();
+Test(clock_suite, test_key_file_creation, .init = setup, .fini = teardown) {
+    FILE *file = fopen(KEY_FILE, "r");
+    cr_assert_not_null(file, "Key file should exist after clock starts");
     
-    // This should trigger SIGINT to the process group
-    // Criterion will catch this and mark the test as passed because of .signal = SIGINT
-    destroyClk(true);
+    int key;
+    cr_assert(fscanf(file, "%d", &key) == 1, "Key file should contain a valid integer key");
+    fclose(file);
 }
