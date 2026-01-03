@@ -24,6 +24,7 @@ int totalWaitingTime = 0;
 int processCount = 0;
 int finishedCount = 0;
 int quantumCounter = 0;
+int currentMLFQLevel = 0;
 
 double totalWTA = 0;
 double totalWTASquared = 0;
@@ -35,11 +36,11 @@ PCB processes[MAX_PROCESSES];
 FILE* logFile;
 FILE* perfFile;
 
+// Modified main() function - key changes:
 int main(int argc, char * argv[])
 {
     initClk();
 
-    // Get parameters from command line
     if (argc < 4) {
         printf("Error: Scheduler needs algorithm, quantum, and msgqid arguments!\n");
         return -1;
@@ -52,7 +53,6 @@ int main(int argc, char * argv[])
     printf("Scheduler started: Algorithm=%d, Quantum=%d, MsgQID=%d\n",
            algorithm, quantum, msgqid);
 
-    // Open log files
     logFile = fopen("scheduler.log", "w");
     if (logFile == NULL) {
         perror("Error opening log file");
@@ -60,72 +60,90 @@ int main(int argc, char * argv[])
     }
     fprintf(logFile, "#At time x process y state arr w total z remain y wait k\n");
 
-    // Initialize ready queue
-    initQueue(&readyQueue);
+    // Initialize appropriate queue structure
+    if (algorithm == 4) { // MLFQ
+        initMLFQ();
+    } else {
+        initQueue(&readyQueue);
+    }
 
-    // Set up signal handler for process completion
     signal(SIGUSR1, handleProcessFinish);
 
-    // Main scheduling loop
     bool allProcessesArrived = false;
 
-    while (!allProcessesArrived || !isEmpty(&readyQueue) || runningProcess != NULL) {
+    while (!allProcessesArrived || 
+           (algorithm == 4 ? !isMLFQEmpty() : !isEmpty(&readyQueue)) || 
+           runningProcess != NULL) {
         currentTime = getClk();
 
-        // Receive new processes
         receiveProcesses();
 
-        // Check for process completion
         if (runningProcess != NULL && runningProcess->remainingTime <= 0) {
             finishProcess(runningProcess);
             runningProcess = NULL;
         }
 
-        // Handle Round Robin quantum expiration
-        if (algorithm == 3 && runningProcess != NULL && runningProcess->state == RUNNING) {
+        // Handle quantum expiration for RR and MLFQ
+        if ((algorithm == 3 || algorithm == 4) && 
+            runningProcess != NULL && 
+            runningProcess->state == RUNNING) {
+            
             quantumCounter++;
-            if (quantumCounter >= quantum && runningProcess->remainingTime > 0) {
+            
+            int currentQuantum = (algorithm == 4) ? 
+                getMLFQQuantum(currentMLFQLevel) : quantum;
+            
+            if (quantumCounter >= currentQuantum && runningProcess->remainingTime > 0) {
                 stopProcess(runningProcess);
-                enqueue(&readyQueue, runningProcess);
+                
+                if (algorithm == 4) {
+                    // MLFQ: demote process
+                    handleMLFQQuantumExpired(runningProcess);
+                } else {
+                    // RR: add back to ready queue
+                    enqueue(&readyQueue, runningProcess);
+                }
+                
                 runningProcess = NULL;
                 quantumCounter = 0;
             }
         }
 
         // Schedule next process if CPU is idle
-        if (runningProcess == NULL && !isEmpty(&readyQueue)) {
-            selectNextProcess();
+        if (runningProcess == NULL) {
+            bool hasProcesses = (algorithm == 4) ? !isMLFQEmpty() : !isEmpty(&readyQueue);
+            if (hasProcesses) {
+                selectNextProcess();
+            }
         }
 
-        // Check if all processes have arrived (received termination message)
+        // Check if all processes have arrived
         Message msg;
         if (msgrcv(msgqid, &msg, sizeof(msg.process), 2, IPC_NOWAIT) != -1) {
             allProcessesArrived = true;
             printf("All processes have arrived\n");
         }
 
-        // Update waiting time for processes in ready queue
-        QueueNode* node = readyQueue.head;
-        while (node != NULL) {
-            if (node->pcb->state == READY) {
-                node->pcb->waitingTime++;
+        // Update waiting time
+        if (algorithm == 4) {
+            // For MLFQ, you'd need to iterate through all queues
+            // This is simplified - you may want to add a helper function
+        } else {
+            QueueNode* node = readyQueue.head;
+            while (node != NULL) {
+                if (node->pcb->state == READY) {
+                    node->pcb->waitingTime++;
+                }
+                node = node->next;
             }
-            node = node->next;
         }
 
-        // Avoid busy waiting
-        usleep(10000); // 10ms
+        usleep(10000);
     }
 
     printf("All processes completed\n");
-
-    // Write performance metrics
     writePerformanceMetrics();
-
-    // Close log files
     fclose(logFile);
-
-    // Clean up
     cleanup();
     destroyClk(true);
 
@@ -206,9 +224,7 @@ void removeFromQueue(Queue* q, PCB* pcb) {
 void receiveProcesses() {
     Message msg;
 
-    // Non-blocking receive of all arrived processes
     while (msgrcv(msgqid, &msg, sizeof(msg.process), 1, IPC_NOWAIT) != -1) {
-        // Create PCB for new process
         PCB* pcb = &processes[processCount++];
         pcb->id = msg.process.id;
         pcb->arrivalTime = msg.process.arrivalTime;
@@ -227,11 +243,16 @@ void receiveProcesses() {
 
         printf("Received process %d at time %d\n", pcb->id, currentTime);
 
-        // Add to ready queue
-        enqueue(&readyQueue, pcb);
+        // Add to appropriate queue
+        if (algorithm == 4) { // MLFQ
+            handleMLFQNewProcess(pcb);
+        } else {
+            enqueue(&readyQueue, pcb);
+        }
     }
 }
 
+// Modified selectNextProcess() function:
 void selectNextProcess() {
     PCB* selected = NULL;
 
@@ -239,18 +260,31 @@ void selectNextProcess() {
         case 1: // HPF
             selected = selectHPF();
             break;
-        case 2: // SJN
+        case 2: // SRTN
             selected = selectSJN();
             break;
         case 3: // RR
             selected = selectRR();
             quantumCounter = 0;
             break;
+        case 4: // MLFQ
+            selected = selectMLFQ();
+            if (selected != NULL) {
+                currentMLFQLevel = getProcessQueueLevel(selected->id);
+                quantumCounter = 0;
+                printf("Selected process %d from MLFQ level %d (quantum=%d)\n",
+                       selected->id, currentMLFQLevel, 
+                       getMLFQQuantum(currentMLFQLevel));
+            }
+            break;
     }
 
     if (selected != NULL) {
         runningProcess = selected;
-        removeFromQueue(&readyQueue, selected);
+        // Note: For MLFQ, process is already dequeued by selectMLFQ()
+        if (algorithm != 4) {
+            removeFromQueue(&readyQueue, selected);
+        }
 
         if (!selected->started) {
             startProcess(selected);

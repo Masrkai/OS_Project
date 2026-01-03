@@ -1,9 +1,13 @@
 #pragma once
 
+/* ==================== Includes ==================== */
+
 #include <stdio.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <sys/types.h>
+
+/* ==================== Data Structures ==================== */
 
 // Process states
 typedef enum {
@@ -36,14 +40,14 @@ typedef struct QueueNode {
     struct QueueNode* next;
 } QueueNode;
 
-// Ready queue
+// Ready queue (singly-linked FIFO)
 typedef struct {
     QueueNode* head;
     QueueNode* tail;
     int size;
 } Queue;
 
-// Message structure for IPC
+// Message structure for IPC (message queue)
 typedef struct {
     long mtype;
     struct {
@@ -54,47 +58,92 @@ typedef struct {
     } process;
 } Message;
 
-// Global variables (extern declarations)
-extern int algorithm;
-extern int quantum;
-extern int msgqid;
-extern PCB processes[];
-extern int processCount;
-extern Queue readyQueue;
-extern PCB* runningProcess;
-extern int currentTime;
-extern int totalWaitingTime;
-extern int totalRuntime;
-extern double totalWTA;
-extern double totalWTASquared;
-extern int finishedCount;
-extern int quantumCounter;
-extern FILE* logFile;
-extern FILE* perfFile;
+/* ==================== Global Variables (extern) ==================== */
 
-// Function declarations
+extern int algorithm;          // Scheduling algorithm identifier
+extern int quantum;            // Time quantum (used in RR, MLFQ)
+extern int msgqid;             // Message queue ID
+
+extern PCB processes[];        // Array of all processes
+extern int processCount;       // Total number of processes
+
+extern Queue readyQueue;       // Main ready queue (used in non-MLFQ algorithms)
+extern PCB* runningProcess;    // Currently executing process
+
+extern int currentTime;        // Global simulated clock
+extern int finishedCount;      // Count of completed processes
+
+extern int totalWaitingTime;   // Sum of waiting times (for avg)
+extern int totalRuntime;       // Sum of runtimes (for utilization)
+extern double totalWTA;        // Sum of WTAs (Waiting Time / Runtime)
+extern double totalWTASquared;// Sum of squared WTAs (for StdDev)
+
+extern int quantumCounter;     // Tracks ticks in current quantum
+extern FILE* logFile;          // Log file for trace output
+extern FILE* perfFile;         // Performance metrics output file
+
+/* ==================== Core Utilities & Initialization ==================== */
+
+void initClk(void);
+void destroyClk(bool cleanupShm);
+
+int getClk(void);              // Get current simulated time
+
 void initQueue(Queue* q);
+void initMLFQ(void);
+
+/* ==================== Queue Operations ==================== */
+
+bool isEmpty(Queue* q);
+int size(Queue* q);            // Optional but useful — consider adding definition if used
+PCB* peek(Queue* q);          // View head without removal
+
 void enqueue(Queue* q, PCB* pcb);
 PCB* dequeue(Queue* q);
-PCB* peek(Queue* q);
-bool isEmpty(Queue* q);
-void removeFromQueue(Queue* q, PCB* pcb);
-void scheduleNext();
+void removeFromQueue(Queue* q, PCB* pcb);  // Remove arbitrary PCB (e.g., on promotion/demotion)
+
+/* ==================== Process Lifecycle Management ==================== */
+
 void startProcess(PCB* pcb);
-void stopProcess(PCB* pcb);
+void stopProcess(PCB* pcb);    // Preempt or yield
 void resumeProcess(PCB* pcb);
 void finishProcess(PCB* pcb);
-void handleProcessFinish(int signum);
-void receiveProcesses();
-void selectNextProcess();
-void writeLog(const char* state, PCB* pcb);
-void writePerformanceMetrics();
-void cleanup();
-int getClk();
-void initClk();
-void destroyClk(bool);
 
-// Algorithm-specific selection functions
-PCB* selectHPF();
-PCB* selectSJN();
-PCB* selectRR();
+void handleProcessFinish(int signum);  // Signal handler for SIGCHLD (or custom)
+
+/* ==================== Scheduling Core ==================== */
+
+void receiveProcesses(void);      // Read/process incoming messages
+void scheduleNext(void);          // Trigger scheduler
+void selectNextProcess(void);     // Dispatch based on `algorithm`
+
+// Algorithm-specific selectors (return next PCB or NULL)
+PCB* selectRR(void);
+PCB* selectHPF(void);
+PCB* selectSJN(void);
+PCB* selectMLFQ(void);
+
+/* ==================== Logging & Metrics ==================== */
+
+void writeLog(const char* state, PCB* pcb);
+void writePerformanceMetrics(void);
+
+/* ==================== Cleanup ==================== */
+
+void cleanup(void);
+
+/* ==================== MLFQ-Specific (Multi-Level Feedback Queue) ==================== */
+
+// Configuration/state helpers
+int getMLFQQuantum(int queueLevel);
+int getProcessQueueLevel(int processId);
+bool isMLFQEmpty(void);
+
+// Queue operations per level (assumes internal MLFQ structure, e.g., array of Queues)
+void enqueueMLFQ(PCB* pcb, int queueLevel);
+
+// Event handlers
+void handleMLFQNewProcess(PCB* pcb);
+void handleMLFQQuantumExpired(PCB* pcb);
+void handleMLFQProcessYielded(PCB* pcb);
+void demoteProcess(PCB* pcb);

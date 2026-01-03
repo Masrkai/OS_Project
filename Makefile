@@ -78,7 +78,8 @@ release: $(RELEASE_DIR) $(RELEASE_OBJ_DIR)
 	$(CC) $(CFLAGS_RELEASE) -c $(SCHEDULER_DIR)/rr_scheduler.c -o $(RELEASE_OBJ_DIR)/rr_scheduler.o
 	$(CC) $(CFLAGS_RELEASE) -c $(SCHEDULER_DIR)/hpf_scheduler.c -o $(RELEASE_OBJ_DIR)/hpf_scheduler.o
 	$(CC) $(CFLAGS_RELEASE) -c $(SCHEDULER_DIR)/sjn_scheduler.c -o $(RELEASE_OBJ_DIR)/sjn_scheduler.o
-	$(CC) $(CFLAGS_RELEASE) $(RELEASE_OBJ_DIR)/schedule.o $(RELEASE_OBJ_DIR)/rr_scheduler.o $(RELEASE_OBJ_DIR)/hpf_scheduler.o $(RELEASE_OBJ_DIR)/sjn_scheduler.o -o $(RELEASE_DIR)/scheduler.out $(LDFLAGS_SCHEDULER)
+	$(CC) $(CFLAGS_RELEASE) -c $(SCHEDULER_DIR)/mlfq_scheduler.c -o $(RELEASE_OBJ_DIR)/mlfq_scheduler.o
+	$(CC) $(CFLAGS_RELEASE) $(RELEASE_OBJ_DIR)/schedule.o $(RELEASE_OBJ_DIR)/rr_scheduler.o $(RELEASE_OBJ_DIR)/hpf_scheduler.o $(RELEASE_OBJ_DIR)/sjn_scheduler.o $(RELEASE_OBJ_DIR)/mlfq_scheduler.o -o $(RELEASE_DIR)/scheduler.out $(LDFLAGS_SCHEDULER)
 	@echo "Release build complete in build/release/"
 
 # Debug build (for flamegraphs and profiling)
@@ -92,7 +93,8 @@ debug: $(DEBUG_DIR) $(DEBUG_OBJ_DIR)
 	$(CC) $(CFLAGS_DEBUG) -c $(SCHEDULER_DIR)/rr_scheduler.c -o $(DEBUG_OBJ_DIR)/rr_scheduler.o
 	$(CC) $(CFLAGS_DEBUG) -c $(SCHEDULER_DIR)/hpf_scheduler.c -o $(DEBUG_OBJ_DIR)/hpf_scheduler.o
 	$(CC) $(CFLAGS_DEBUG) -c $(SCHEDULER_DIR)/sjn_scheduler.c -o $(DEBUG_OBJ_DIR)/sjn_scheduler.o
-	$(CC) $(CFLAGS_DEBUG) $(DEBUG_OBJ_DIR)/schedule.o $(DEBUG_OBJ_DIR)/rr_scheduler.o $(DEBUG_OBJ_DIR)/hpf_scheduler.o $(DEBUG_OBJ_DIR)/sjn_scheduler.o -o $(DEBUG_DIR)/scheduler.out $(LDFLAGS_SCHEDULER)
+	$(CC) $(CFLAGS_DEBUG) -c $(SCHEDULER_DIR)/mlfq_scheduler.c -o $(DEBUG_OBJ_DIR)/mlfq_scheduler.o
+	$(CC) $(CFLAGS_DEBUG) $(DEBUG_OBJ_DIR)/schedule.o $(DEBUG_OBJ_DIR)/rr_scheduler.o $(DEBUG_OBJ_DIR)/hpf_scheduler.o $(DEBUG_OBJ_DIR)/sjn_scheduler.o $(DEBUG_OBJ_DIR)/mlfq_scheduler.o -o $(DEBUG_DIR)/scheduler.out $(LDFLAGS_SCHEDULER)
 	@echo "Debug build complete in build/debug/"
 	@echo "To generate flamegraphs, use:"
 	@echo "  perf record -F 99 -g ./build/debug/scheduler.out <args>"

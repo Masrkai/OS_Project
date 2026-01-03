@@ -51,15 +51,16 @@ int main(int argc, char *argv[]) {
   printf("1. Preemptive Highest Priority First (HPF)\n");
   printf("2. Shortest Job Next (SJN)\n");
   printf("3. Round Robin (RR)\n");
-  printf("Enter choice (1-3): ");
+  printf("4. Multi-Level Feedback Queue (MLFQ)\n");
+  printf("Enter choice (1-4): ");
   scanf("%d", &algorithm);
 
-  if (algorithm < 1 || algorithm > 3) {
+  if (algorithm < 1 || algorithm > 4) {
     printf("Invalid algorithm choice!\n");
     return -1;
   }
 
-  // If Round Robin, ask for quantum
+  // If Round Robin or MLFQ, ask for quantum
   if (algorithm == 3) {
     printf("Enter time quantum for Round Robin: ");
     scanf("%d", &quantum);
@@ -67,6 +68,10 @@ int main(int argc, char *argv[]) {
       printf("Invalid quantum value!\n");
       return -1;
     }
+  } else if (algorithm == 4) {
+    // MLFQ uses predefined quantums per queue, but we can pass a base quantum
+    printf("MLFQ uses adaptive quantums (Q0=2, Q1=4, Q2=8)\n");
+    quantum = 2; // Base quantum for MLFQ
   }
 
   // 3. Create message queue for IPC
@@ -117,6 +122,7 @@ int main(int argc, char *argv[]) {
   }
 
   printf("Scheduler process created with PID: %d\n", schedulerPid);
+  printf("Running with algorithm=%d, quantum=%d\n", algorithm, quantum);
 
   // Give scheduler time to initialize
   sleep(1);
