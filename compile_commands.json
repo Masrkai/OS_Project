@@ -122,6 +122,21 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-c",
+      "-o",
+      "build/release/objects/mlfq_scheduler.o",
+      "src/schedulers/mlfq_scheduler.c"
+    ],
+    "directory": "/home/masrkai/Documents/College/Current/OS/Development",
+    "file": "/home/masrkai/Documents/College/Current/OS/Development/src/schedulers/mlfq_scheduler.c",
+    "output": "/home/masrkai/Documents/College/Current/OS/Development/build/release/objects/mlfq_scheduler.o"
+  },
+  {
+    "arguments": [
+      "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
       "-c",
       "-O0",
       "-g3",
@@ -258,6 +273,23 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
+      "-O0",
+      "-g3",
+      "-Wall",
+      "-Wextra",
+      "-fno-omit-frame-pointer",
+      "-c",
+      "-o",
+      "build/debug/objects/mlfq_scheduler.o",
+      "src/schedulers/mlfq_scheduler.c"
+    ],
+    "directory": "/home/masrkai/Documents/College/Current/OS/Development",
+    "file": "/home/masrkai/Documents/College/Current/OS/Development/src/schedulers/mlfq_scheduler.c",
+    "output": "/home/masrkai/Documents/College/Current/OS/Development/build/debug/objects/mlfq_scheduler.o"
+  },
+  {
+    "arguments": [
+      "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
       "-c",
       "-Wall",
       "-Wextra",
@@ -270,5 +302,21 @@
     "directory": "/home/masrkai/Documents/College/Current/OS/Development",
     "file": "/home/masrkai/Documents/College/Current/OS/Development/test/test_clk.c",
     "output": "/home/masrkai/Documents/College/Current/OS/Development/build/tests/test_clock"
+  },
+  {
+    "arguments": [
+      "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-I.",
+      "-I/nix/store/6amnav00a844n1pmh7bjshfhw0d92yzx-criterion-2.4.2-dev/include",
+      "-o",
+      "build/tests/test_process",
+      "test/test_process.c"
+    ],
+    "directory": "/home/masrkai/Documents/College/Current/OS/Development",
+    "file": "/home/masrkai/Documents/College/Current/OS/Development/test/test_process.c",
+    "output": "/home/masrkai/Documents/College/Current/OS/Development/build/tests/test_process"
   }
 ]
