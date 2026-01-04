@@ -36,7 +36,7 @@ PCB processes[MAX_PROCESSES];
 FILE* logFile;
 FILE* perfFile;
 
-// Modified main() function - key changes:
+// Improved main() function with MLFQ aging and better logic
 int main(int argc, char * argv[])
 {
     initClk();
@@ -70,6 +70,7 @@ int main(int argc, char * argv[])
     signal(SIGUSR1, handleProcessFinish);
 
     bool allProcessesArrived = false;
+    int statsCounter = 0; // For periodic MLFQ stats printing
 
     while (!allProcessesArrived ||
         (algorithm == 4 ? !isMLFQEmpty() : !isEmpty(&readyQueue)) ||
@@ -79,7 +80,20 @@ int main(int argc, char * argv[])
         currentTime = getClk();
         int elapsed = currentTime - previousTime;
 
+        // Receive any new processes that have arrived
         receiveProcesses();
+
+        // Update MLFQ aging if using MLFQ algorithm
+        if (algorithm == 4 && elapsed > 0) {
+            updateMLFQAging(currentTime, elapsed);
+            
+            // Print MLFQ statistics periodically (every 20 time units)
+            statsCounter += elapsed;
+            if (statsCounter >= 20) {
+                printMLFQStats();
+                statsCounter = 0;
+            }
+        }
 
         // Decrement remaining time for running process
         if (runningProcess != NULL && runningProcess->state == RUNNING && elapsed > 0) {
@@ -90,32 +104,80 @@ int main(int argc, char * argv[])
                 runningProcess->id, runningProcess->remainingTime);
         }
 
+        // Check if running process has finished
         if (runningProcess != NULL && runningProcess->remainingTime <= 0) {
             finishProcess(runningProcess);
             runningProcess = NULL;
+            quantumCounter = 0; // Reset quantum counter
         }
 
         // Handle quantum expiration for RR and MLFQ
         if ((algorithm == 3 || algorithm == 4) &&
             runningProcess != NULL &&
-            runningProcess->state == RUNNING) {
+            runningProcess->state == RUNNING &&
+            runningProcess->remainingTime > 0) {
 
             quantumCounter += elapsed;
 
             int currentQuantum = (algorithm == 4) ?
                 getMLFQQuantum(currentMLFQLevel) : quantum;
 
-            if (quantumCounter >= currentQuantum && runningProcess->remainingTime > 0) {
+            // Check if quantum has expired
+            if (quantumCounter >= currentQuantum) {
+                printf("Quantum expired for process %d (used %d/%d)\n",
+                       runningProcess->id, quantumCounter, currentQuantum);
+                
                 stopProcess(runningProcess);
 
                 if (algorithm == 4) {
+                    // MLFQ: quantum expired means process used full quantum
                     handleMLFQQuantumExpired(runningProcess);
                 } else {
+                    // RR: put back in ready queue
                     enqueue(&readyQueue, runningProcess);
                 }
 
                 runningProcess = NULL;
                 quantumCounter = 0;
+            }
+        }
+
+        // Handle preemption for preemptive algorithms (HPF and SJN/SRTN)
+        if ((algorithm == 1 || algorithm == 2) && 
+            runningProcess != NULL && 
+            runningProcess->state == RUNNING) {
+            
+            bool shouldPreempt = false;
+            PCB* higherPriorityProcess = NULL;
+
+            if (algorithm == 1) { // HPF - check for higher priority
+                QueueNode* node = readyQueue.head;
+                while (node != NULL) {
+                    if (node->pcb->priority < runningProcess->priority) {
+                        shouldPreempt = true;
+                        higherPriorityProcess = node->pcb;
+                        break;
+                    }
+                    node = node->next;
+                }
+            } else if (algorithm == 2) { // SRTN - check for shorter remaining time
+                QueueNode* node = readyQueue.head;
+                while (node != NULL) {
+                    if (node->pcb->remainingTime < runningProcess->remainingTime) {
+                        shouldPreempt = true;
+                        higherPriorityProcess = node->pcb;
+                        break;
+                    }
+                    node = node->next;
+                }
+            }
+
+            if (shouldPreempt) {
+                printf("Preempting process %d for higher priority process %d\n",
+                       runningProcess->id, higherPriorityProcess->id);
+                stopProcess(runningProcess);
+                enqueue(&readyQueue, runningProcess);
+                runningProcess = NULL;
             }
         }
 
@@ -127,15 +189,16 @@ int main(int argc, char * argv[])
             }
         }
 
-        // Check if all processes have arrived
+        // Check if all processes have arrived (termination signal from generator)
         Message msg;
         if (msgrcv(msgqid, &msg, sizeof(msg.process), 2, IPC_NOWAIT) != -1) {
             allProcessesArrived = true;
             printf("All processes have arrived\n");
         }
 
-        // Update waiting time
-        if (algorithm != 4) {
+        // Update waiting time for non-MLFQ algorithms
+        // (MLFQ handles this in updateMLFQAging)
+        if (algorithm != 4 && elapsed > 0) {
             QueueNode* node = readyQueue.head;
             while (node != NULL) {
                 if (node->pcb->state == READY) {
@@ -145,10 +208,17 @@ int main(int argc, char * argv[])
             }
         }
 
-        usleep(10000); // 10ms sleep
+        usleep(10000); // 10ms sleep to avoid busy waiting
     }
 
     printf("All processes completed\n");
+    
+    // Print final MLFQ statistics if using MLFQ
+    if (algorithm == 4) {
+        printf("\n=== Final MLFQ Statistics ===\n");
+        printMLFQStats();
+    }
+    
     writePerformanceMetrics();
     fclose(logFile);
     cleanup();
