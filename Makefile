@@ -167,7 +167,6 @@ $(GTK_OBJECT): $(GTK_SOURCE) | $(GTK_GUI_BUILD_OBJECT_DIR)
 
 $(GTK_TARGET): $(GTK_OBJECT) | $(GTK_GUI_BUILD_DIR)
 	$(CC) $^ -o $@ $(LDFLAGS_GTK4)
-	@echo "✅ GTK4 application built at $@"
 
 # ==================== CLEAN TARGETS ====================
 clean: clean-scheduler clean-tests
@@ -177,4 +176,4 @@ clean-scheduler:
 	rm -f processes.txt
 
 clean-tests:
-	rm -f *.o unit_tests dark compile_commands.json
+	rm -f *.o unit_tests dark
