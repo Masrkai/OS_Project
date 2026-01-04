@@ -8,7 +8,8 @@
 **Purpose**: Allocate shared memory segment
 
 **Parameters**:
-- `key`: Unique identifier (from `ftok()`)
+
+- `key`: Unique identifier (from `ftok()` which generate an IPC key)
 - `size`: Memory size in bytes
 - `flags`: Creation flags (`IPC_CREAT | 0644` = create with permissions)
 
@@ -24,6 +25,7 @@ shmid = shmget(key, 4, IPC_CREAT | 0644);
 **Purpose**: Attach shared memory to process address space
 
 **Parameters**:
+
 - `shmid`: Shared memory ID
 - `addr`: Desired address (NULL = let OS choose)
 - `flags`: Attachment options (0 = read-write)
@@ -44,6 +46,7 @@ shmaddr = (int *)shmat(shmid, (void *)0, 0);
 **Purpose**: Control operations on shared memory
 
 **Common Commands**:
+
 - `IPC_RMID`: Remove shared memory segment
 
 **Usage in Code**:
@@ -55,6 +58,7 @@ shmctl(shmid, IPC_RMID, NULL); // Destroy shared memory
 **Purpose**: Generate unique key from file path and project ID
 
 **Parameters**:
+
 - `path`: Existing file path
 - `proj_id`: Project identifier (single char)
 
@@ -83,6 +87,7 @@ msgqid = msgget(msgkey, IPC_CREAT | 0644);
 **Purpose**: Send message to queue
 
 **Parameters**:
+
 - `msgqid`: Queue ID
 - `msgp`: Pointer to message structure
 - `size`: Size of message data (excluding mtype)
@@ -102,6 +107,7 @@ msgsnd(msgqid, &msg, sizeof(Process), 0);
 **Purpose**: Receive message from queue
 
 **Parameters**:
+
 - `type`: Message type to receive (0 = any, >0 = specific, <0 = range)
 - `flags`: IPC_NOWAIT = return immediately if no message
 
@@ -121,6 +127,7 @@ while (msgrcv(msgqid, &msg, sizeof(msg.process), 1, IPC_NOWAIT) != -1) {
 **Purpose**: Control message queue
 
 **Commands**:
+
 - `IPC_RMID`: Remove queue
 
 **Usage in Code**:
@@ -134,6 +141,7 @@ msgctl(msgqid, IPC_RMID, NULL);
 **Purpose**: Create child process (exact copy of parent)
 
 **Returns**:
+
 - Child process: 0
 - Parent process: child's PID
 - Error: -1
@@ -156,6 +164,7 @@ if (pid == 0) {
 **Purpose**: Replace current process image with new program
 
 **Parameters**:
+
 - `path`: Path to executable
 - `arg0`: Program name (by convention)
 - `arg1...`: Arguments to program
@@ -174,6 +183,7 @@ exit(-1);
 **Purpose**: Wait for child process to change state
 
 **Parameters**:
+
 - `pid`: Specific child (-1 = any child)
 - `status`: Exit status output
 - `options`: 0 = blocking, WNOHANG = non-blocking
@@ -189,6 +199,7 @@ waitpid(schedulerPid, NULL, 0); // Wait for specific child
 **Purpose**: Send signal to process
 
 **Common Signals**:
+
 - `SIGSTOP`: Pause process execution
 - `SIGCONT`: Resume paused process
 - `SIGKILL`: Force terminate (cannot be caught)
@@ -286,6 +297,7 @@ void initQueue(Queue* q) {
 **Purpose**: Add element to back of queue
 
 **Algorithm**:
+
 1. Allocate new node
 2. Set node data
 3. If empty: head = tail = node
@@ -298,6 +310,7 @@ void initQueue(Queue* q) {
 **Purpose**: Remove and return front element
 
 **Algorithm**:
+
 1. Save head node
 2. Move head to next node
 3. If empty: set tail = NULL
@@ -316,6 +329,7 @@ void initQueue(Queue* q) {
 **Purpose**: Remove specific element from anywhere in queue
 
 **Algorithm**:
+
 1. Handle head removal specially
 2. Traverse list to find element
 3. Update previous node's next pointer
@@ -461,6 +475,7 @@ if (file == NULL) {
 ```
 
 **Modes**:
+
 - `"r"`: Read
 - `"w"`: Write (truncate)
 - `"a"`: Append
@@ -655,6 +670,7 @@ printf("Process %d: remaining=%d\n", id, remaining);
 **Purpose**: Performance analysis with flamegraphs
 
 **Tools Used**:
+
 - `perf record`: Capture execution profile
 - `stackcollapse-perf.pl`: Convert to flamegraph format
 - `flamegraph.pl`: Generate SVG visualization
@@ -667,6 +683,7 @@ printf("Process %d: remaining=%d\n", id, remaining);
 **Purpose**: Enable profiling by relaxing kernel restrictions
 
 **Parameters Modified**:
+
 - `kernel.kptr_restrict=0`: Allow kernel pointer access
 - `kernel.perf_event_paranoid=0`: Allow performance monitoring
 
