@@ -13,14 +13,14 @@ void setup(void) {
     clock_pid = fork();
     if (clock_pid == 0) {
         // Child process: Execute the clock logic
-        // For testing, we can use execl if clk is compiled, 
+        // For testing, we can use execl if clk is compiled,
         // or just call a modified main-like function.
         char *args[] = {"./../release/clk.out", NULL};
         execv("./../release/clk.out", args);
         exit(0);
     }
     // Give the clock a moment to create the file and SHM
-    sleep(1); 
+    sleep(1);
 }
 
 // This teardown runs after each test to clean up
@@ -47,14 +47,14 @@ Test(clock_suite, test_clock_initialization, .init = setup, .fini = teardown) {
     sleep(2);
     int later_time = getClk();
     cr_assert(later_time > initial_time, "Clock should increment over time. Expected > %d, got %d", initial_time, later_time);
-    
+
     destroyClk(false);
 }
 
 Test(clock_suite, test_key_file_creation, .init = setup, .fini = teardown) {
     FILE *file = fopen(KEY_FILE, "r");
     cr_assert_not_null(file, "Key file should exist after clock starts");
-    
+
     int key;
     cr_assert(fscanf(file, "%d", &key) == 1, "Key file should contain a valid integer key");
     fclose(file);

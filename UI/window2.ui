@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="title">Process Scheduler GUI</property>
+    <property name="default-width">800</property>
+    <property name="default-height">600</property>
+    <property name="resizable">True</property>
+
+    <child>
+      <object class="GtkBox" id="main_box">
+        <property name="orientation">vertical</property>
+        <property name="spacing">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+
+        <child>
+          <object class="GtkLabel" id="header_label">
+            <property name="label">Process Scheduler Simulator</property>
+            <property name="halign">center</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+              <attribute name="size" value="16000"/>
+            </attributes>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkFrame" id="step1_frame">
+            <property name="label">Step 1: Generate Processes</property>
+            <child>
+              <object class="GtkBox" id="process_box">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+
+                <child>
+                  <object class="GtkLabel" id="process_label">
+                    <property name="label">Enter number of processes to generate:</property>
+                    <property name="halign">start</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkBox" id="input_box">
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkSpinButton" id="process_count_spin">
+                        <property name="adjustment">
+                          <object class="GtkAdjustment">
+                            <property name="lower">1</property>
+                            <property name="upper">100</property>
+                            <property name="value">4</property>
+                            <property name="step-increment">1</property>
+                          </object>
+                        </property>
+                        <property name="width-chars">10</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="generate_button">
+                        <property name="label">Generate Processes</property>
+                        <property name="halign">start</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkLabel" id="process_status_label">
+                    <property name="label">Status: Ready to generate processes</property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkFrame" id="step2_frame">
+            <property name="label">Step 2: Run Scheduler</property>
+            <child>
+              <object class="GtkBox" id="scheduler_box">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">12</property>
+
+                <child>
+                  <object class="GtkLabel" id="algorithm_label">
+                    <property name="label">Select scheduling algorithm:</property>
+                    <property name="halign">start</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkComboBoxText" id="algorithm_combo">
+                    <property name="halign">start</property>
+                    <items>
+                      <item id="1" translatable="yes">1. Preemptive Highest Priority First (HPF)</item>
+                      <item id="2" translatable="yes">2. Shortest Job Next (SJN)</item>
+                      <item id="3" translatable="yes">3. Round Robin (RR)</item>
+                      <item id="4" translatable="yes">4. Multi-Level Feedback Queue (MLFQ)</item>
+                    </items>
+                    <property name="active-id">1</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkButton" id="run_button">
+                    <property name="label">Run Scheduler</property>
+                    <property name="sensitive">False</property>
+                    <property name="halign">start</property>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkLabel" id="scheduler_status_label">
+                    <property name="label">Status: Waiting for processes to be generated</property>
+                    <property name="halign">start</property>
+                    <style>
+                      <class name="dim-label"/>
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkFrame" id="output_frame">
+            <property name="label">Execution Output</property>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolled_window">
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="min-content-height">200</property>
+                <property name="has-frame">True</property>
+                <child>
+                  <object class="GtkTextView" id="output_textview">
+                    <property name="editable">False</property>
+                    <property name="wrap-mode">word</property>
+                    <property name="monospace">True</property>
+                    <property name="left-margin">8</property>
+                    <property name="right-margin">8</property>
+                    <property name="top-margin">8</property>
+                    <property name="bottom-margin">8</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox" id="button_box">
+            <property name="spacing">8</property>
+            <property name="halign">end</property>
+            <child>
+              <object class="GtkLabel" id="status_label">
+                <property name="label">Ready</property>
+                <property name="halign">start</property>
+                <property name="hexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="clear_button">
+                <property name="label">Clear Output</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="quit_button">
+                <property name="label">Quit</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

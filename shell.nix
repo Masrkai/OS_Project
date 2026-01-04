@@ -72,6 +72,4 @@ pkgs.mkShell {
     ${builtins.readFile ./Scripts/kernel_security_bypass.sh}
   '';
 
-    # ${builtins.readFile ./Scripts/profile.sh}
-
 }

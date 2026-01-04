@@ -1,3 +1,122 @@
+here is my file structure:
+
+```
+├── 󱧼 build
+│   ├──  debug
+│   │   ├──  objects
+│   │   │   ├──  hpf_scheduler.o
+│   │   │   ├──  mlfq_scheduler.o
+│   │   │   ├──  rr_scheduler.o
+│   │   │   ├──  schedule.o
+│   │   │   └──  sjn_scheduler.o
+│   │   ├──  clk.out
+│   │   ├──  process.out
+│   │   ├──  process_generator.out
+│   │   ├──  scheduler.out
+│   │   └──  test_generator.out
+│   ├──  release
+│   │   ├──  objects
+│   │   │   ├──  hpf_scheduler.o
+│   │   │   ├──  mlfq_scheduler.o
+│   │   │   ├──  rr_scheduler.o
+│   │   │   ├──  schedule.o
+│   │   │   └──  sjn_scheduler.o
+│   │   ├──  clk.out
+│   │   ├──  process.out
+│   │   ├──  process_generator.out
+│   │   ├──  processes.txt
+│   │   ├──  scheduler.out
+│   │   └──  test_generator.out
+│   └──  tests
+│       ├── 󰡯 test_clock
+│       └── 󰡯 test_process
+├──  Docs
+│   ├──  Algorithms
+│   │   ├──  overview.md
+│   │   ├──  Preemptive_Highest_Priority_First_(HPF).md
+│   │   ├──  Round_Robin_(RR).md
+│   │   ├──  Shortest_Job_Next_(SJN).md
+│   │   └──  zrules.md
+│   ├──  Project_Phases
+│   │   ├──  OS_Project.md
+│   │   ├──  OS_Project.pdf
+│   │   └──  Phase1_OS_Scheduler.pdf
+│   ├──  Tasks
+│   │   ├──  Record.md
+│   │   ├──  'Task0_(Extra Algorithm).md'
+│   │   ├──  'Task0_1_(Seperate Algorithm log & Perf).md'
+│   │   ├──  Task1_(GUI).md
+│   │   ├──  Task2_(Testing).md
+│   │   ├──  'Task2_1(Memory leaks).md'
+│   │   ├──  Task2_1(Testing_units).md
+│   │   ├──  'Task2_2(No Unsafe).md'
+│   │   ├──  Task3_(Flamegraps).md
+│   │   └──  Task4_(Gource).md
+│   └──  think
+│       └──  test_scheduler.md
+├──  Flamegraphs
+│   ├──  Excutables_perf
+│   │   ├──  cpu_perf.data
+│   │   └──  mem_perf.data
+│   └──  SVGs
+│       ├── 󰕙 cpu_flamegraph.svg
+│       └── 󰕙 mem_flamegraph.svg
+├──  images
+│   ├──  process.txt_showcase.png
+│   └──  test_generator_number_example.png
+├──  include
+│   ├──  headers.h
+│   └──  schedule.h
+├──  'Needs looking'
+│   ├──  test_clk.c
+│   ├── 󰡯 test_process
+│   ├──  test_process.c
+│   ├── 󰡯 test_process_generator
+│   ├──  test_process_generator.c
+│   └──  test_scheduler.c
+├──  Scripts
+│   ├──  Automate_Flamegraphs.sh
+│   ├──  Gource_visualized_git_history.sh
+│   └──  kernel_security_bypass.sh
+├── 󰣞 src
+│   ├──  schedulers
+│   │   ├──  hpf_scheduler.c
+│   │   ├──  mlfq_scheduler.c
+│   │   ├──  rr_scheduler.c
+│   │   └──  sjn_scheduler.c
+│   ├──  clk.c
+│   ├──  process.c
+│   ├──  process_generator.c
+│   ├──  scheduler.c
+│   └──  test_generator.c
+├──  test
+│   ├──  test_clk.c
+│   ├──  test_process.c
+│   └──  test_scheduler.c
+├──  UI
+│   ├──  Images
+│   │   ├──  app_icon.png
+│   │   └── 󰕙 crystal-original.svg
+│   ├──  resources
+│   │   └──  style_embedded.h
+│   ├──  app.desktop
+│   ├── 󰡯 dark
+│   ├──  dark.c
+│   ├──  Makefile
+│   └──  style.css
+├── 󰊢 .gitignore
+├──  c_look_doc.md
+├──  Makefile
+├── 󰂺 README.md
+├──  shell.nix
+└──  Visualized_Git_History.mp4
+```
+
+I have this C file that i want to test called scheduler.c i am testing it using the file test_scheduler.c, and i insist on using criterion
+
+scheduler.c:
+
+```c
 #include "../include/schedule.h"
 #include "../include/headers.h"
 
@@ -444,3 +563,114 @@ void writePerformanceMetrics() {
 void cleanup() {
     printf("Scheduler cleanup complete\n");
 }
+
+```
+
+
+the tricky part is the declarations for each algorithm selectRR, selectSJN, selectMLFQ, selectHPF. isn't defined here but later linked using the compiled object files of hpf_scheduler.o mlfq_scheduler.o rr_scheduler.o schedule.o sjn_scheduler.o
+
+and there is a clock.c
+
+```c
+
+/*
+ * This file represents an emulated clock for simulation purpose only.
+ * It is not a real part of operating system!
+ * This file must be started FIRST before any other process.
+ */
+
+#include "../include/headers.h"
+
+int shmid;
+
+/* Clear the resources before exit */
+void cleanup(int signum) {
+  shmctl(shmid, IPC_RMID, NULL);
+
+  // Remove the key file
+  if (remove(KEY_FILE) == 0) {
+    printf("Removed key file: %s\n", KEY_FILE);
+  }
+
+  printf("Clock terminating!\n");
+  exit(0);
+}
+
+/* This file represents the system clock for ease of calculations */
+int main(int argc, char *argv[]) {
+  printf("Clock starting\n");
+  signal(SIGINT, cleanup);
+
+  // Create a marker file for ftok (it must exist!)
+  const char *marker_file = ".osclock_marker";
+  FILE *marker = fopen(marker_file, "a");
+  if (!marker) {
+    perror("Error creating marker file");
+    exit(-1);
+  }
+  fclose(marker);
+
+  // Generate key using ftok with the marker file
+  key_t key = ftok(marker_file, SHM_PROJ);
+  if (key == -1) {
+    perror("Error in ftok");
+    exit(-1);
+  }
+
+  printf("Generated SHM key: %d\n", key);
+
+  // Write the key to a file for other processes to read
+  FILE *keyfile = fopen(KEY_FILE, "w");
+  if (!keyfile) {
+    perror("Error creating key file");
+    exit(-1);
+  }
+  fprintf(keyfile, "%d", key);
+  fclose(keyfile);
+  printf("Key written to: %s\n", KEY_FILE);
+
+  int clk = 0;
+
+  // Create shared memory for one integer variable (4 bytes)
+  shmid = shmget(key, 4, IPC_CREAT | 0644);
+  if (shmid == -1) {
+    perror("Error in creating shm!");
+    remove(KEY_FILE); // Clean up key file
+    exit(-1);
+  }
+
+  int *shmaddr = (int *)shmat(shmid, (void *)0, 0);
+  if ((long)shmaddr == -1) {
+    perror("Error in attaching the shm in clock!");
+    shmctl(shmid, IPC_RMID, NULL);
+    remove(KEY_FILE); // Clean up key file
+    exit(-1);
+  }
+
+  *shmaddr = clk; /* initialize shared memory */
+  printf("Clock initialized successfully. Starting tick...\n");
+
+  while (1) {
+    sleep(1);
+    (*shmaddr)++;
+  }
+
+  return 0;
+}
+
+```
+
+
+while these are very complicated i wish to test the compiled binaries in releas, "./../release/clk.out". "./../release/scheduler.out", 
+
+here is an example of the process that is supposed to be scheduled according to the algorithm:
+
+```
+#id arrival runtime priority
+1	2	14	2
+2	5	8	10
+3	12	1	5
+```
+
+
+how can that file be ever tested properly

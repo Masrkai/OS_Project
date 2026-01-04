@@ -12,7 +12,10 @@ CFLAGS_DEBUG = -O0 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic
 SRC_DIR = src
 TEST_DIR = test
 BUILD_DIR = build
-GTK_GUI_DIR = UI
+
+GTK_GUI_SRC_DIR = UI
+GTK_GUI_BUILD_DIR = $(BUILD_DIR)/GUI
+GTK_GUI_BUILD_OBJECT_DIR = $(GTK_GUI_BUILD_DIR)/objects
 
 RELEASE_DIR = $(BUILD_DIR)/release
 RELEASE_OBJ_DIR = $(RELEASE_DIR)/objects
@@ -42,7 +45,7 @@ LDFLAGS_GTK4 = $(filter -L% -l% -Wl%, $(GTK4_FLAGS))
 .PHONY: all scheduler tests gtk clean clean-scheduler clean-tests help
 
 # Default target - build everything
-all: scheduler tests gtk
+all: scheduler gtk tests
 
 # Help target
 help:
@@ -118,10 +121,8 @@ run:
 	./$(RELEASE_DIR)/process_generator.out
 
 # ==================== TEST TARGETS ====================
-
-TESTING_DIR = $(BUILD_DIR)/tests
-
 tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process
+#  $(TESTING_DIR)/test_scheduler
 
 $(TESTING_DIR)/test_clock: $(TEST_DIR)/test_clk.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
@@ -129,20 +130,47 @@ $(TESTING_DIR)/test_clock: $(TEST_DIR)/test_clk.c | $(TESTING_DIR)
 $(TESTING_DIR)/test_process: $(TEST_DIR)/test_process.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
 
+# $(TESTING_DIR)/test_scheduler: $(TEST_DIR)/test_scheduler.c | $(TESTING_DIR)
+# 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
+
 $(TESTING_DIR):
 	mkdir -p $@
 
 # ==================== GTK TARGETS ====================
-gtk: dark
 
-dark: dark.o
-	@echo "Building GTK4 application..."
-	$(CC) $^ -o $@ $(LDFLAGS_GTK4)
+# gtk: dark
+
+# dark: dark.o
+# 	@echo "Building GTK4 application..."
+# 	$(CC) $^ -o $@ $(LDFLAGS_GTK4)
 
 
-dark.o: dark.c
+# dark.o: $(GTK_GUI_SRC_DIR)/dark.c
+# 	$(CC) $(CFLAGS_GTK4) -c $< -o $@
+
+
+
+# ==================== GTK TARGETS ====================
+
+$(GTK_GUI_BUILD_DIR):
+	mkdir -p $@
+
+$(GTK_GUI_BUILD_OBJECT_DIR):
+	mkdir -p $@
+
+# Explicitly define the single source and object
+GTK_SOURCE = $(GTK_GUI_SRC_DIR)/dark.c
+GTK_OBJECT = $(GTK_GUI_BUILD_OBJECT_DIR)/dark.o
+GTK_TARGET = $(GTK_GUI_BUILD_DIR)/dark
+
+gtk: $(GTK_TARGET)
+
+$(GTK_OBJECT): $(GTK_SOURCE) | $(GTK_GUI_BUILD_OBJECT_DIR)
 	$(CC) $(CFLAGS_GTK4) -c $< -o $@
 
+$(GTK_TARGET): $(GTK_OBJECT) | $(GTK_GUI_BUILD_DIR)
+	$(CC) $^ -o $@ $(LDFLAGS_GTK4)
+	@echo "✅ GTK4 application built at $@"
 
 # ==================== CLEAN TARGETS ====================
 clean: clean-scheduler clean-tests
