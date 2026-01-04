@@ -21,6 +21,8 @@ pkgs.mkShell {
     gobject-introspection
     bear
 
+    libadwaita
+
     # unity-test
     criterion
 

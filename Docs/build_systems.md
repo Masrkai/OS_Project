@@ -39,6 +39,7 @@ CFLAGS_RELEASE = -O2 -Wall -Wextra
 ```
 
 **Flag Breakdown**:
+
 - `-O2`: Optimization level 2 (balanced speed/size)
   - Enables: function inlining, loop optimization, dead code elimination
   - Typical performance gain: 30-50% faster than -O0
@@ -53,6 +54,7 @@ CFLAGS_DEBUG = -O0 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic
 ```
 
 **Flag Breakdown**:
+
 - `-O0`: No optimization (preserve exact code flow)
   - Makes debugging predictable (no reordered statements)
 - `-g3`: Maximum debug information
@@ -82,6 +84,7 @@ LDFLAGS_SCHEDULER = -lm
 **Purpose**: Build everything (default target)
 
 **Execution Order**:
+
 1. `make scheduler` (both release and debug)
 2. `make gtk` (GTK4 application)
 3. `make tests` (unit tests)
@@ -154,6 +157,7 @@ LDFLAGS_SCHEDULER = -lm
    - Better organization: Clear separation of concerns
 
 **Output Location**: `build/release/`
+
 - `clk.out` (clock process)
 - `process.out` (simulated process)
 - `test_generator.out` (test case generator)
@@ -166,19 +170,13 @@ LDFLAGS_SCHEDULER = -lm
 **Build Process**: Identical to release but with `CFLAGS_DEBUG`
 
 **Key Differences**:
+
 - No optimization: Code matches source line-by-line
 - Debug symbols: Source file names, line numbers, variable names included
 - Frame pointers: Stack traces work correctly
 - Symbol export: Function names visible to external tools
 
 **Output Location**: `build/debug/`
-
-**Profiling Instructions Printed**:
-```
-To generate flamegraphs, use:
-  perf record -F 99 -g ./build/debug/scheduler.out <args>
-  perf script | stackcollapse-perf.pl | flamegraph.pl > flamegraph.svg
-```
 
 ### Run Target
 
@@ -190,6 +188,7 @@ To generate flamegraphs, use:
 **Requirements**: Must run `make release` first
 
 **Interactive Prompts**:
+
 1. Reads `processes.txt`
 2. Asks for scheduling algorithm
 3. Asks for quantum (if needed)
@@ -223,6 +222,7 @@ To generate flamegraphs, use:
    ```
 
 **Test Files**:
+
 - `test_clock`: Tests clock initialization and shared memory
 - `test_process`: Tests process execution and signal handling
 
@@ -274,6 +274,7 @@ To generate flamegraphs, use:
 **Purpose**: Remove all build artifacts
 
 **Actions**:
+
 1. Calls `make clean-scheduler`
 2. Calls `make clean-tests`
 
@@ -288,8 +289,6 @@ rm -rf build/
 rm -f processes.txt
 ```
 
-**Why Remove processes.txt**: Generated file, not source code
-
 ### `make clean-tests`
 **Purpose**: Remove test and GTK build artifacts
 
@@ -299,6 +298,7 @@ rm -f *.o unit_tests dark compile_commands.json
 ```
 
 **Files Removed**:
+
 - `.o`: Stray object files in root
 - `unit_tests`: Old test executable
 - `dark`: Old GTK executable (if built in root)
@@ -310,6 +310,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Command**: `gcc -E source.c`
 
 **Actions**:
+
 - Include header files (`#include`)
 - Expand macros (`#define`)
 - Process conditional compilation (`#ifdef`)
@@ -321,6 +322,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Command**: `gcc -S source.c` (or implicit with `-c`)
 
 **Actions**:
+
 - Parse C syntax
 - Perform semantic analysis
 - Optimize code (if optimization enabled)
@@ -332,6 +334,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Command**: `gcc -c source.c` or `as source.s`
 
 **Actions**:
+
 - Convert assembly to machine code
 - Create symbol table (function/variable names)
 - Generate relocation information
@@ -342,6 +345,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Command**: `gcc obj1.o obj2.o -o program`
 
 **Actions**:
+
 - Resolve external symbol references
 - Combine object files
 - Link system libraries
@@ -527,6 +531,7 @@ GTK4_FLAGS = $(shell pkg-config --cflags --libs gtk4)
 ```
 
 **Benefits**:
+
 - Platform-independent (paths differ across systems)
 - Version-agnostic (adapts to installed version)
 - Comprehensive (includes all dependencies)
@@ -623,6 +628,7 @@ make release && cd build/release && ./test_generator.out && ./process_generator.
 ## Summary
 
 This build system provides:
+
 - **Two build configurations**: Optimized release and debuggable profiling builds
 - **Modular compilation**: Fast incremental builds
 - **Multiple projects**: Scheduler, tests, GUI in one Makefile
