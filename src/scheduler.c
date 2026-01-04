@@ -72,11 +72,23 @@ int main(int argc, char * argv[])
     bool allProcessesArrived = false;
 
     while (!allProcessesArrived ||
-           (algorithm == 4 ? !isMLFQEmpty() : !isEmpty(&readyQueue)) ||
-           runningProcess != NULL) {
+        (algorithm == 4 ? !isMLFQEmpty() : !isEmpty(&readyQueue)) ||
+        runningProcess != NULL) {
+
+        int previousTime = currentTime;
         currentTime = getClk();
+        int elapsed = currentTime - previousTime;
 
         receiveProcesses();
+
+        // Decrement remaining time for running process
+        if (runningProcess != NULL && runningProcess->state == RUNNING && elapsed > 0) {
+            runningProcess->remainingTime -= elapsed;
+            runningProcess->executionTime += elapsed;
+
+            printf("Process %d: remaining=%d\n",
+                runningProcess->id, runningProcess->remainingTime);
+        }
 
         if (runningProcess != NULL && runningProcess->remainingTime <= 0) {
             finishProcess(runningProcess);
@@ -88,7 +100,7 @@ int main(int argc, char * argv[])
             runningProcess != NULL &&
             runningProcess->state == RUNNING) {
 
-            quantumCounter++;
+            quantumCounter += elapsed;
 
             int currentQuantum = (algorithm == 4) ?
                 getMLFQQuantum(currentMLFQLevel) : quantum;
@@ -97,10 +109,8 @@ int main(int argc, char * argv[])
                 stopProcess(runningProcess);
 
                 if (algorithm == 4) {
-                    // MLFQ: demote process
                     handleMLFQQuantumExpired(runningProcess);
                 } else {
-                    // RR: add back to ready queue
                     enqueue(&readyQueue, runningProcess);
                 }
 
@@ -125,20 +135,17 @@ int main(int argc, char * argv[])
         }
 
         // Update waiting time
-        if (algorithm == 4) {
-            // For MLFQ, you'd need to iterate through all queues
-            // This is simplified - you may want to add a helper function
-        } else {
+        if (algorithm != 4) {
             QueueNode* node = readyQueue.head;
             while (node != NULL) {
                 if (node->pcb->state == READY) {
-                    node->pcb->waitingTime++;
+                    node->pcb->waitingTime += elapsed;
                 }
                 node = node->next;
             }
         }
 
-        usleep(10000);
+        usleep(10000); // 10ms sleep
     }
 
     printf("All processes completed\n");
