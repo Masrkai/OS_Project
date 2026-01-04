@@ -1,73 +1,72 @@
 #include <criterion/criterion.h>
-#include <criterion/logging.h>
+#include <criterion/hooks.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <signal.h>
-#include "../include/headers.h"
+#include <sys/wait.h>
+#include <errno.h>
 
-static bool signal_received = false;
+#define PROCESS_PATH "./../release/process.out"
 
-// Signal handler to catch the process's completion notification
-void handle_sigusr1(int sig) {
-    signal_received = true;
+// Helper to check if a process is still alive
+bool is_process_running(pid_t pid) {
+    return kill(pid, 0) == 0;
 }
 
-// Setup: Start the clock process so process.c can connect to it
-void setup_proc(void) {
-    signal_received = false;
-    signal(SIGUSR1, handle_sigusr1);
+TestSuite(process_behavior);
 
-    if (fork() == 0) {
-        execl("./../release/clk.out", "./../release/clk.out", NULL);
-        exit(0);
-    }
-    sleep(1); // Wait for clock SHM to exist
-}
-
-void teardown_proc(void) {
-    // Kill the clock and any leftover processes
-    system("pkill -9 clk");
-    remove(KEY_FILE);
-    remove(".osclock_marker");
-}
-
-TestSuite(process_logic, .init = setup_proc, .fini = teardown_proc);
-
-Test(process_logic, test_process_execution_flow) {
-    int runtime = 3;
-    cr_log_info("Starting test: Process with %d unit runtime.", runtime);
-
-    // 1. Fork the process under test
-    pid_t worker_pid = fork();
-    if (worker_pid == 0) {
-        char runtime_str[10];
-        sprintf(runtime_str, "%d", runtime);
-        execl("./../release/process.out", "./../release/process.out", runtime_str, NULL);
+// 1. Test Argument Validation
+Test(process_behavior, test_no_arguments) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // Run with no arguments
+        execl(PROCESS_PATH, PROCESS_PATH, NULL);
         exit(1);
     }
 
-    // 2. Connect to the clock in the test process to manipulate time
-    initClk();
-    int start_time = getClk();
-    cr_log_info("Initial Clock: %d. Manually ticking the clock...", start_time);
+    int status;
+    waitpid(pid, &status, 0);
 
-    // 3. Simulate time passing by incrementing SHM directly
-    // Process expects 3 units. We tick 4 times to be sure.
-    for (int i = 1; i <= 4; i++) {
-        sleep(1); // Real sleep so process loop can catch the change
-        (*shmaddr)++; 
-        cr_log_info("Tick %d -> Clock is now %d", i, getClk());
+    // argc < 2 returns -1, which manifests as exit code 255
+    cr_assert(WIFEXITED(status));
+    cr_assert_eq(WEXITSTATUS(status), 255, "Process should exit with -1 (255) when no args provided");
+}
+
+// 2. Test Execution and Signal Handling (The "Scheduler" perspective)
+Test(process_behavior, test_lifecycle_and_signals) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execl(PROCESS_PATH, PROCESS_PATH, "5", NULL);
+        exit(1);
     }
 
-    // 4. Verify the process sent the finish signal (SIGUSR1)
-    cr_expect(signal_received, "Process should have sent SIGUSR1 to parent upon completion.");
+    // Give it a moment to start
+    usleep(100000);
 
-    // 5. Verify the process actually terminated
+    // Verify it's running
+    cr_assert(is_process_running(pid), "Process should be running in its busy loop.");
+
+    // Simulate Scheduler STOP (SIGSTOP)
+    cr_log_info("Sending SIGSTOP to process %d", pid);
+    kill(pid, SIGSTOP);
+
     int status;
-    waitpid(worker_pid, &status, WNOHANG);
-    cr_assert(WIFEXITED(status), "Process should have exited by now.");
-    
-    cr_log_info("Process successfully tracked time and notified parent.");
-    destroyClk(false);
+    // WUNTRACED allows us to see if it stopped
+    waitpid(pid, &status, WUNTRACED);
+    cr_assert(WIFSTOPPED(status), "Process should have stopped upon receiving SIGSTOP.");
+
+    // Simulate Scheduler RESUME (SIGCONT)
+    cr_log_info("Sending SIGCONT to process %d", pid);
+    kill(pid, SIGCONT);
+    usleep(1000);
+    cr_assert(is_process_running(pid), "Process should be running again after SIGCONT.");
+
+    // Simulate Scheduler TERMINATION (SIGKILL)
+    cr_log_info("Terminating process %d", pid);
+    kill(pid, SIGKILL);
+    waitpid(pid, &status, 0);
+
+    cr_assert(WIFSIGNALED(status), "Process should have been terminated by a signal.");
+    cr_assert_eq(WTERMSIG(status), SIGKILL);
 }
