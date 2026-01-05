@@ -118,8 +118,7 @@ run:
 	./$(RELEASE_DIR)/process_generator.out
 
 # ==================== TEST TARGETS ====================
-tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process
-#  $(TESTING_DIR)/test_scheduler
+tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process $(TESTING_DIR)/test_scheduler $(TESTING_DIR)/test_integration
 
 $(TESTING_DIR)/test_clock: $(TEST_DIR)/test_clk.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
@@ -127,25 +126,14 @@ $(TESTING_DIR)/test_clock: $(TEST_DIR)/test_clk.c | $(TESTING_DIR)
 $(TESTING_DIR)/test_process: $(TEST_DIR)/test_process.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
 
-# $(TESTING_DIR)/test_scheduler: $(TEST_DIR)/test_scheduler.c | $(TESTING_DIR)
-# 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
+$(TESTING_DIR)/test_scheduler: $(TEST_DIR)/test_scheduler.c | $(TESTING_DIR)
+	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
+
+$(TESTING_DIR)/test_integration: $(TEST_DIR)/test_integration.c | $(TESTING_DIR)
+	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
 
 $(TESTING_DIR):
 	mkdir -p $@
-
-# ==================== GTK TARGETS ====================
-
-# gtk: dark
-
-# dark: dark.o
-# 	@echo "Building GTK4 application..."
-# 	$(CC) $^ -o $@ $(LDFLAGS_GTK4)
-
-
-# dark.o: $(GTK_GUI_SRC_DIR)/dark.c
-# 	$(CC) $(CFLAGS_GTK4) -c $< -o $@
-
-
 
 # ==================== GTK TARGETS ====================
 
