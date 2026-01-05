@@ -36,7 +36,6 @@ PCB processes[MAX_PROCESSES];
 FILE* logFile;
 FILE* perfFile;
 
-// Improved main() function with MLFQ aging and better logic
 int main(int argc, char * argv[])
 {
     initClk();
