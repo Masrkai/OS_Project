@@ -38,6 +38,10 @@ int generate_processes(FILE *output, int no, unsigned int seed) {
 }
 
 int main(int argc, char *argv[]) {
+  // Suppress unused parameter warnings
+  (void)argc;
+  (void)argv;
+  
   FILE *pFile;
   pFile = fopen("processes.txt", "w");
   if (pFile == null) {
@@ -47,7 +51,13 @@ int main(int argc, char *argv[]) {
 
   int no;
   printf("Please enter the number of processes you want to generate: ");
-  scanf("%d", &no);
+
+  // Check scanf return value to handle the warn_unused_result warning
+  if (scanf("%d", &no) != 1) {
+    fprintf(stderr, "Error: Invalid input. Please enter a valid integer.\n");
+    fclose(pFile);
+    return 1;
+  }
 
   int result = generate_processes(pFile, no, time(null));
 

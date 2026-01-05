@@ -28,6 +28,10 @@ pid_t schedulerPid = -1;
 pid_t clockPid = -1;
 
 int main(int argc, char *argv[]) {
+  // Suppress unused parameter warnings
+  (void)argc;
+  (void)argv;
+  
   signal(SIGINT, clearResources);
 
   Process processes[MAX_PROCESSES];
@@ -53,7 +57,11 @@ int main(int argc, char *argv[]) {
   printf("3. Round Robin (RR)\n");
   printf("4. Multi-Level Feedback Queue (MLFQ)\n");
   printf("Enter choice (1-4): ");
-  scanf("%d", &algorithm);
+  
+  if (scanf("%d", &algorithm) != 1) {
+    printf("Failed to read algorithm choice!\n");
+    return -1;
+  }
 
   if (algorithm < 1 || algorithm > 4) {
     printf("Invalid algorithm choice!\n");
@@ -63,7 +71,10 @@ int main(int argc, char *argv[]) {
   // If Round Robin or MLFQ, ask for quantum
   if (algorithm == 3) {
     printf("Enter time quantum for Round Robin: ");
-    scanf("%d", &quantum);
+    if (scanf("%d", &quantum) != 1) {
+      printf("Failed to read quantum value!\n");
+      return -1;
+    }
     if (quantum <= 0) {
       printf("Invalid quantum value!\n");
       return -1;
@@ -212,8 +223,11 @@ void sendProcessesToScheduler(Process processes[], int count, int msgqid) {
   Message msg;
   msg.mtype = 2;
   msg.process.id = -1; // Special ID indicating end of processes
-  msgsnd(msgqid, &msg, sizeof(Process), 0);
-  printf("Sent termination signal to scheduler\n");
+  if (msgsnd(msgqid, &msg, sizeof(Process), 0) == -1) {
+    perror("Error sending termination signal");
+  } else {
+    printf("Sent termination signal to scheduler\n");
+  }
 }
 
 // Clear all IPC resources
