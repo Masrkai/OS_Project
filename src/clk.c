@@ -10,6 +10,8 @@ int shmid;
 
 /* Clear the resources before exit */
 void cleanup(int signum) {
+  printf("Received signal %d, cleaning up...\n", signum);
+
   shmctl(shmid, IPC_RMID, NULL);
 
   // Remove the key file
@@ -23,6 +25,12 @@ void cleanup(int signum) {
 
 /* This file represents the system clock for ease of calculations */
 int main(int argc, char *argv[]) {
+
+  if (argc > 1) {
+    printf("Usage: %s\n", argv[0]);
+    printf("no arguments needed\n");
+  }
+
   printf("Clock starting\n");
   signal(SIGINT, cleanup);
 
