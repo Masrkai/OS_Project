@@ -138,7 +138,7 @@
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
       "-c",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -155,7 +155,7 @@
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
       "-c",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -172,7 +172,7 @@
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
       "-c",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -189,7 +189,7 @@
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
       "-c",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -205,7 +205,7 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -222,7 +222,7 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -239,7 +239,7 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -256,7 +256,7 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",
@@ -273,7 +273,7 @@
   {
     "arguments": [
       "/nix/store/vr15iyyykg9zai6fpgvhcgyw7gckl78w-gcc-wrapper-14.3.0/bin/gcc",
-      "-O0",
+      "-O1",
       "-g3",
       "-Wall",
       "-Wextra",

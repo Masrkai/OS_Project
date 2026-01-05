@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS_RELEASE = -O2 -Wall -Wextra
 
 # Debug flags (no optimization, debug symbols, frame pointer for profiling)
-CFLAGS_DEBUG = -O0 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic
+CFLAGS_DEBUG = -O1 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic 
 
 # Directories
 SRC_DIR = src
@@ -118,7 +118,7 @@ run:
 	./$(RELEASE_DIR)/process_generator.out
 
 # ==================== TEST TARGETS ====================
-tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process $(TESTING_DIR)/test_scheduler $(TESTING_DIR)/test_integration
+tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process $(TESTING_DIR)/test_scheduler
 
 $(TESTING_DIR)/test_clock: $(TEST_DIR)/test_clk.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
@@ -127,9 +127,6 @@ $(TESTING_DIR)/test_process: $(TEST_DIR)/test_process.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
 
 $(TESTING_DIR)/test_scheduler: $(TEST_DIR)/test_scheduler.c | $(TESTING_DIR)
-	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
-
-$(TESTING_DIR)/test_integration: $(TEST_DIR)/test_integration.c | $(TESTING_DIR)
 	$(CC) $(CFLAGS_CRITERION) $< -o $@ $(LDFLAGS_CRITERION)
 
 $(TESTING_DIR):

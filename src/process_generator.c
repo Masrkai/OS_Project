@@ -28,6 +28,10 @@ pid_t schedulerPid = -1;
 pid_t clockPid = -1;
 
 int main(int argc, char *argv[]) {
+  // Suppress unused parameter warnings
+  (void)argc;
+  (void)argv;
+  
   signal(SIGINT, clearResources);
 
   Process processes[MAX_PROCESSES];
@@ -54,7 +58,6 @@ int main(int argc, char *argv[]) {
   printf("4. Multi-Level Feedback Queue (MLFQ)\n");
   printf("Enter choice (1-4): ");
   
-  // FIX 1: Check scanf return value
   if (scanf("%d", &algorithm) != 1) {
     printf("Failed to read algorithm choice!\n");
     return -1;
@@ -68,7 +71,6 @@ int main(int argc, char *argv[]) {
   // If Round Robin or MLFQ, ask for quantum
   if (algorithm == 3) {
     printf("Enter time quantum for Round Robin: ");
-    // FIX 2: Check scanf return value
     if (scanf("%d", &quantum) != 1) {
       printf("Failed to read quantum value!\n");
       return -1;
@@ -221,7 +223,6 @@ void sendProcessesToScheduler(Process processes[], int count, int msgqid) {
   Message msg;
   msg.mtype = 2;
   msg.process.id = -1; // Special ID indicating end of processes
-  // FIX 3: Also check return value of msgsnd here
   if (msgsnd(msgqid, &msg, sizeof(Process), 0) == -1) {
     perror("Error sending termination signal");
   } else {

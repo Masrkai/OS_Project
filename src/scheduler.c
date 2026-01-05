@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
         // Update MLFQ aging if using MLFQ algorithm
         if (algorithm == 4 && elapsed > 0) {
             updateMLFQAging(currentTime, elapsed);
-            
+
             // Print MLFQ statistics periodically (every 20 time units)
             statsCounter += elapsed;
             if (statsCounter >= 20) {
@@ -100,8 +100,8 @@ int main(int argc, char * argv[])
             runningProcess->remainingTime -= elapsed;
             runningProcess->executionTime += elapsed;
 
-            printf("Process %d: remaining=%d\n",
-                runningProcess->id, runningProcess->remainingTime);
+            printf("Process %d: remaining=%d, executed=%d\n",
+                runningProcess->id, runningProcess->remainingTime, runningProcess->executionTime);
         }
 
         // Check if running process has finished
@@ -126,7 +126,7 @@ int main(int argc, char * argv[])
             if (quantumCounter >= currentQuantum) {
                 printf("Quantum expired for process %d (used %d/%d)\n",
                        runningProcess->id, quantumCounter, currentQuantum);
-                
+
                 stopProcess(runningProcess);
 
                 if (algorithm == 4) {
@@ -143,10 +143,10 @@ int main(int argc, char * argv[])
         }
 
         // Handle preemption for preemptive algorithms (HPF and SJN/SRTN)
-        if ((algorithm == 1 || algorithm == 2) && 
-            runningProcess != NULL && 
+        if ((algorithm == 1 || algorithm == 2) &&
+            runningProcess != NULL &&
             runningProcess->state == RUNNING) {
-            
+
             bool shouldPreempt = false;
             PCB* higherPriorityProcess = NULL;
 
@@ -212,13 +212,13 @@ int main(int argc, char * argv[])
     }
 
     printf("All processes completed\n");
-    
+
     // Print final MLFQ statistics if using MLFQ
     if (algorithm == 4) {
         printf("\n=== Final MLFQ Statistics ===\n");
         printMLFQStats();
     }
-    
+
     writePerformanceMetrics();
     fclose(logFile);
     cleanup();
@@ -318,7 +318,8 @@ void receiveProcesses() {
 
         totalRuntime += pcb->runtime;
 
-        printf("Received process %d at time %d\n", pcb->id, currentTime);
+        printf("Received process %d at time %d (arrival=%d, runtime=%d)\n", 
+               pcb->id, currentTime, pcb->arrivalTime, pcb->runtime);
 
         // Add to appropriate queue
         if (algorithm == 4) { // MLFQ
@@ -329,7 +330,6 @@ void receiveProcesses() {
     }
 }
 
-// Modified selectNextProcess() function:
 void selectNextProcess() {
     PCB* selected = NULL;
 
@@ -390,8 +390,12 @@ void startProcess(PCB* pcb) {
         pcb->state = RUNNING;
         pcb->startTime = currentTime;
         pcb->executionTime = 0;
+        
+        // Calculate and set initial waiting time (time from arrival to first start)
+        pcb->waitingTime = currentTime - pcb->arrivalTime;
 
-        printf("Started process %d with PID %d at time %d\n", pcb->id, pid, currentTime);
+        printf("Started process %d with PID %d at time %d (initial wait: %d)\n", 
+               pcb->id, pid, currentTime, pcb->waitingTime);
 
         writeLog("started", pcb);
     } else {
@@ -408,7 +412,8 @@ void stopProcess(PCB* pcb) {
     pcb->state = READY;
     pcb->lastStopTime = currentTime;
 
-    printf("Stopped process %d at time %d\n", pcb->id, currentTime);
+    printf("Stopped process %d at time %d (executed: %d, remaining: %d)\n", 
+           pcb->id, currentTime, pcb->executionTime, pcb->remainingTime);
 
     writeLog("stopped", pcb);
 }
@@ -421,13 +426,15 @@ void resumeProcess(PCB* pcb) {
 
     pcb->state = RUNNING;
 
-    // Update waiting time
+    // Update waiting time - add the time spent waiting since last stop
     if (pcb->lastStopTime != -1) {
-        int waitTime = currentTime - pcb->lastStopTime;
-        pcb->waitingTime += waitTime;
+        int additionalWait = currentTime - pcb->lastStopTime;
+        pcb->waitingTime += additionalWait;
+        printf("Resumed process %d at time %d (additional wait: %d, total wait: %d)\n", 
+               pcb->id, currentTime, additionalWait, pcb->waitingTime);
+    } else {
+        printf("Resumed process %d at time %d\n", pcb->id, currentTime);
     }
-
-    printf("Resumed process %d at time %d\n", pcb->id, currentTime);
 
     writeLog("resumed", pcb);
 }
@@ -438,8 +445,17 @@ void finishProcess(PCB* pcb) {
     pcb->state = FINISHED;
     pcb->finishTime = currentTime;
 
-    // Calculate metrics
+    // Calculate turnaround time
     int turnaroundTime = pcb->finishTime - pcb->arrivalTime;
+
+    // Calculate waiting time using the reliable formula:
+    // Waiting Time = Turnaround Time - Execution Time
+    // This ensures correctness regardless of tracking issues
+    int calculatedWaitingTime = turnaroundTime - pcb->executionTime;
+    
+    // Use the calculated value (more reliable than incremental tracking)
+    pcb->waitingTime = calculatedWaitingTime;
+
     double wta = (double)turnaroundTime / pcb->runtime;
 
     totalWaitingTime += pcb->waitingTime;
@@ -447,8 +463,11 @@ void finishProcess(PCB* pcb) {
     totalWTASquared += (wta * wta);
     finishedCount++;
 
-    printf("Finished process %d at time %d (TA=%d, WTA=%.2f)\n",
-           pcb->id, currentTime, turnaroundTime, wta);
+    printf("Finished process %d at time %d:\n", pcb->id, currentTime);
+    printf("  Arrival: %d, Finish: %d, Runtime: %d, Executed: %d\n",
+           pcb->arrivalTime, pcb->finishTime, pcb->runtime, pcb->executionTime);
+    printf("  TA=%d, WT=%d, WTA=%.2f\n",
+           turnaroundTime, pcb->waitingTime, wta);
 
     writeLog("finished", pcb);
 
@@ -458,6 +477,9 @@ void finishProcess(PCB* pcb) {
 }
 
 void handleProcessFinish(int signum) {
+    // Suppress unused parameter warning
+    (void)signum;
+
     // This signal handler is called when a process sends SIGUSR1
     // We handle the actual finishing in the main loop
     if (runningProcess != NULL) {
