@@ -63,5 +63,8 @@ int main(int argc, char *argv[]) {
 
   fclose(pFile);
 
-  return result == 0 ? 0 : 1;
+  if (result == 0)
+      return 0;
+  else
+      return 1;
 }
