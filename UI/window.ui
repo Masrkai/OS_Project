@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="gtk" version="4.0"/>
   <object class="GtkApplicationWindow" id="main_window">
-    <property name="title">My GTK4 App</property>
-    <property name="default-width">400</property>
-    <property name="default-height">300</property>
-    <child>
-      <object class="GtkBox">
-        <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-        <property name="spacing">10</property>
-        <property name="margin-top">20</property>
-        <property name="margin-bottom">20</property>
-        <property name="margin-start">20</property>
-        <property name="margin-end">20</property>
-        <child>
-          <object class="GtkButton" id="my_button">
-            <property name="label">Click Me!</property>
-            <style>
-              <class name="custom-button"/>
-            </style>
-          </object>
-        </child>
+    <property name="title">Elegant Scheduler</property>
+    <property name="default-width">800</property>
+    <property name="default-height">800</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="show-title-buttons">true</property>
       </object>
     </child>
   </object>
