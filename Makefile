@@ -33,39 +33,48 @@ LDFLAGS_SCHEDULER = -lm
 # ==================== TEST/GTK PROJECT ====================
 CRITERION_FLAGS = $(shell pkg-config --cflags --libs criterion)
 GTK4_FLAGS = $(shell pkg-config --cflags --libs gtk4)
+GTK3_FLAGS = $(shell pkg-config --cflags --libs gtk+-3.0)
 
 CFLAGS_BASE = -Wall -Wextra -I.
 CFLAGS_CRITERION = $(CFLAGS_BASE) $(filter -I%, $(CRITERION_FLAGS))
 CFLAGS_GTK4 = $(CFLAGS_BASE) $(filter -I% -mfpmath=% -msse%, $(GTK4_FLAGS))
+CFLAGS_GTK3 = $(CFLAGS_BASE) $(filter -I% -mfpmath=% -msse%, $(GTK3_FLAGS))
 
 LDFLAGS_CRITERION = $(filter -L% -l% -Wl%, $(CRITERION_FLAGS))
 LDFLAGS_GTK4 = $(filter -L% -l% -Wl%, $(GTK4_FLAGS))
+LDFLAGS_GTK3 = $(filter -L% -l% -Wl%, $(GTK3_FLAGS))
 
 # ==================== PHONY TARGETS ====================
-.PHONY: all scheduler tests gtk clean clean-scheduler clean-tests help
+.PHONY: all scheduler tests gtk gui clean clean-scheduler clean-tests clean-gui help install-gtk-deps
 
 # Default target - build everything
-all: scheduler gtk tests
+all: scheduler gtk gui tests
 
 # Help target
 help:
 	@echo "Available targets:"
 	@echo ""
 	@echo "Build targets:"
-	@echo "  make all          - Build all projects (scheduler + tests + gtk)"
+	@echo "  make all          - Build all projects (scheduler + tests + gtk + gui)"
 	@echo "  make scheduler    - Build both release and debug scheduler versions"
 	@echo "  make release      - Build optimized scheduler in build/release/"
 	@echo "  make debug        - Build debug scheduler in build/debug/"
+	@echo "  make gui          - Build scheduler GUI (GTK3, in build/GUI/)"
 	@echo "  make tests        - Build unit_tests (requires Criterion)"
 	@echo "  make gtk          - Build dark GTK4 application"
 	@echo ""
 	@echo "Run targets:"
 	@echo "  make run          - Run process_generator.out from release build"
+	@echo "  make run-gui      - Run the scheduler GUI"
+	@echo ""
+	@echo "Install targets:"
+	@echo "  make install-gtk-deps - Install GTK3 dependencies (Ubuntu/Debian)"
 	@echo ""
 	@echo "Clean targets:"
 	@echo "  make clean        - Remove all build artifacts"
 	@echo "  make clean-scheduler - Remove only scheduler build artifacts"
 	@echo "  make clean-tests  - Remove only test/gtk build artifacts"
+	@echo "  make clean-gui    - Remove only GUI build artifacts"
 
 # ==================== SCHEDULER TARGETS ====================
 scheduler: release debug
@@ -117,6 +126,81 @@ $(DEBUG_OBJ_DIR):
 run:
 	./$(RELEASE_DIR)/process_generator.out
 
+# ==================== SCHEDULER GUI TARGETS (GTK3) ====================
+
+# GUI source and object files
+GUI_SCHEDULER_SOURCE = $(GTK_GUI_SRC_DIR)/scheduler_gui.c
+GUI_SCHEDULER_OBJECT = $(GTK_GUI_BUILD_OBJECT_DIR)/scheduler_gui.o
+GUI_SCHEDULER_TARGET = $(GTK_GUI_BUILD_DIR)/scheduler_gui
+
+# Build GUI
+gui: $(GUI_SCHEDULER_TARGET)
+	@echo ""
+	@echo "====================================="
+	@echo "Scheduler GUI built successfully!"
+	@echo "====================================="
+	@echo "To run: make run-gui"
+	@echo "   or:  $(GUI_SCHEDULER_TARGET)"
+	@echo ""
+
+$(GUI_SCHEDULER_OBJECT): $(GUI_SCHEDULER_SOURCE) | $(GTK_GUI_BUILD_OBJECT_DIR)
+	@echo "Compiling scheduler GUI..."
+	@if pkg-config --exists gtk+-3.0; then \
+		$(CC) $(CFLAGS_GTK3) -c $< -o $@; \
+	else \
+		echo ""; \
+		echo "ERROR: GTK+3.0 not found!"; \
+		echo "Please install with: make install-gtk-deps"; \
+		echo "Or manually: sudo apt-get install libgtk-3-dev pkg-config"; \
+		echo ""; \
+		exit 1; \
+	fi
+
+$(GUI_SCHEDULER_TARGET): $(GUI_SCHEDULER_OBJECT) release | $(GTK_GUI_BUILD_DIR)
+	@echo "Linking scheduler GUI..."
+	$(CC) $< -o $@ $(LDFLAGS_GTK3)
+	@echo "Creating convenience symlink..."
+	@rm -f scheduler_gui
+	@ln -sf "$(GUI_SCHEDULER_TARGET)" scheduler_gui
+
+# Run the GUI (ensures release build exists first)
+run-gui: gui release
+	@echo "Starting Scheduler GUI..."
+	@echo "Working directory: $(pwd)"
+	@cd "$(pwd)" && ./build/GUI/scheduler_gui
+
+# Install GTK3 dependencies
+install-gtk-deps:
+	@echo "Installing GTK+3.0 development libraries..."
+	@if command -v nix-env > /dev/null || [ -n "$NIX_PATH" ]; then \
+		echo "NixOS detected. Installing via nix-env..."; \
+		nix-env -iA nixos.gtk3 nixos.pkg-config; \
+		echo "Or add to your configuration.nix:"; \
+		echo "  environment.systemPackages = with pkgs; [ gtk3 pkg-config ];"; \
+	elif command -v pacman > /dev/null; then \
+		echo "Arch Linux detected. Installing via pacman..."; \
+		sudo pacman -S --needed gtk3 pkgconf; \
+	elif command -v apt-get > /dev/null; then \
+		echo "Debian/Ubuntu detected. Installing via apt..."; \
+		sudo apt-get update; \
+		sudo apt-get install -y libgtk-3-dev pkg-config; \
+	elif command -v dnf > /dev/null; then \
+		echo "Fedora/RHEL detected. Installing via dnf..."; \
+		sudo dnf install -y gtk3-devel pkgconfig; \
+	else \
+		echo ""; \
+		echo "Could not detect package manager."; \
+		echo "Please install GTK+3.0 development libraries manually:"; \
+		echo "  - Arch/Manjaro: sudo pacman -S gtk3 pkgconf"; \
+		echo "  - NixOS: nix-env -iA nixos.gtk3 nixos.pkg-config"; \
+		echo "  - Debian/Ubuntu: sudo apt-get install libgtk-3-dev pkg-config"; \
+		echo ""; \
+		exit 1; \
+	fi
+	@echo ""
+	@echo "GTK+3.0 installed successfully!"
+	@echo "Now run: make gui"
+
 # ==================== TEST TARGETS ====================
 tests: $(TESTING_DIR)/test_clock $(TESTING_DIR)/test_process $(TESTING_DIR)/test_scheduler
 
@@ -132,13 +216,7 @@ $(TESTING_DIR)/test_scheduler: $(TEST_DIR)/test_scheduler.c | $(TESTING_DIR)
 $(TESTING_DIR):
 	mkdir -p $@
 
-# ==================== GTK TARGETS ====================
-
-$(GTK_GUI_BUILD_DIR):
-	mkdir -p $@
-
-$(GTK_GUI_BUILD_OBJECT_DIR):
-	mkdir -p $@
+# ==================== GTK4 TARGETS ====================
 
 # Explicitly define the single source and object
 GTK_SOURCE = $(GTK_GUI_SRC_DIR)/dark.c
@@ -153,12 +231,25 @@ $(GTK_OBJECT): $(GTK_SOURCE) | $(GTK_GUI_BUILD_OBJECT_DIR)
 $(GTK_TARGET): $(GTK_OBJECT) | $(GTK_GUI_BUILD_DIR)
 	$(CC) $^ -o $@ $(LDFLAGS_GTK4)
 
+# ==================== DIRECTORY CREATION ====================
+$(GTK_GUI_BUILD_DIR):
+	mkdir -p $@
+
+$(GTK_GUI_BUILD_OBJECT_DIR):
+	mkdir -p $@
+
 # ==================== CLEAN TARGETS ====================
-clean: clean-scheduler clean-tests
+clean: clean-scheduler clean-tests clean-gui
 
 clean-scheduler:
-	rm -rf $(BUILD_DIR)
-	rm -f processes.txt
+	rm -rf $(RELEASE_DIR) $(DEBUG_DIR)
+	rm -f processes.txt scheduler.log scheduler.perf
+	rm -f .osclock_key .osclock_marker .gen_input .pg_input
 
 clean-tests:
-	rm -f *.o unit_tests dark
+	rm -rf $(TESTING_DIR)
+	rm -f *.o unit_tests
+
+clean-gui:
+	rm -rf $(GTK_GUI_BUILD_DIR)
+	rm -f scheduler_gui
