@@ -34,7 +34,7 @@ Use **[Gource](https://gource.io/)** to create a **dynamic, visual representatio
      ```bash
      gource --title "Our Project" --hide filenames,mouse --file-extensions --highlight-users --auto-skip-seconds 1
      ```
-   - **Optional**: Customize further (see [tutorial](https://medium.com/the-bug-shots/visualizing-your-git-repository-history-with-gource-b4702a86fa3d)):
+   - **Optional**: Customize further (see [how to tutorial](https://medium.com/the-bug-shots/visualizing-your-git-repository-history-with-gource-b4702a86fa3d)):
      - `--seconds-per-day 0.1` (speed up animation).
      - `--max-files 1000` (limit files shown).
      - `--output-framerate 30` (for smoother video output).
