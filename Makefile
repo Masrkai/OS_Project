@@ -6,7 +6,7 @@ CC = gcc
 CFLAGS_RELEASE = -O2 -Wall -Wextra
 
 # Debug flags (no optimization, debug symbols, frame pointer for profiling)
-CFLAGS_DEBUG = -O1 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic 
+CFLAGS_DEBUG = -O1 -g3 -Wall -Wextra -fno-omit-frame-pointer -fno-optimize-sibling-calls -rdynamic
 
 # Directories
 SRC_DIR = src
