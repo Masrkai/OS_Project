@@ -14,7 +14,7 @@ pkgs.mkShell {
     stdenv.cc
     stdenv.cc.cc
 
-
+    gtk3
     gtk4
     glib
     pkg-config
