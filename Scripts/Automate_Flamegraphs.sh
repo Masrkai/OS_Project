@@ -28,7 +28,7 @@ echo "1" | sudo perf record -F 99 -g -o "$PERF_DATA_DIR/cpu_perf.data" $EXE
 echo "🔥 Generating CPU Flame Graph..."
 sudo perf script -i "$PERF_DATA_DIR/cpu_perf.data" | \
     stackcollapse-perf.pl | \
-    flamegraph.pl > "$SVG_DIR/cpu_flamegraph.svg"
+    flamegraph.pl --width=1500 --fontsize=14 --title="CPU Flame Graph" > "$SVG_DIR/cpu_flamegraph.svg"
 
 # ---------------------------------------------------------
 # 4. Memory Profiling (Page Faults & Memory Events)
@@ -40,7 +40,8 @@ echo "1" | sudo perf record -e faults -g -o "$PERF_DATA_DIR/mem_perf.data" $EXE
 echo "🔥 Generating Memory Flame Graph..."
 sudo perf script -i "$PERF_DATA_DIR/mem_perf.data" | \
     stackcollapse-perf.pl | \
-    flamegraph.pl --color=mem --title="Memory Flame Graph (Page Faults)" > "$SVG_DIR/mem_flamegraph.svg"
+    flamegraph.pl --color=mem --width=1500  --fontsize=14 --title="Memory Flame Graph (Page Faults)" > "$SVG_DIR/mem_flamegraph.svg"
+
 
 # Return to root
 cd "$PROJECT_ROOT"

@@ -1,0 +1,325 @@
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:4:1: warning: replace macro with enum [cppcoreguidelines-macro-to-enum,modernize-macro-to-enum]
+    4 | #define MAX_PROCESSES 100
+      | ^~~~~~~
+      |                       =
+    5 | 
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:4:9: warning: macro 'MAX_PROCESSES' defines an integral constant; prefer an enum instead [cppcoreguidelines-macro-to-enum,modernize-macro-to-enum]
+    4 | #define MAX_PROCESSES 100
+      |         ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:7:9: warning: accessing fields in struct 'Process' is inefficient due to poor alignment; currently aligned to 4 bytes, but recommended alignment is 16 bytes [altera-struct-pack-align]
+    7 | typedef struct {
+      |         ^
+    8 |   int id;
+    9 |   int arrivalTime;
+   10 |   int runtime;
+   11 |   int priority;
+   12 | } Process;
+      |   __attribute__((aligned(16)))
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:7:9: note: use "__attribute__((aligned(16)))" to align struct 'Process' to 16 bytes
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:15:9: warning: accessing fields in struct 'Message' is inefficient due to poor alignment; currently aligned to 8 bytes, but recommended alignment is 32 bytes [altera-struct-pack-align]
+   15 | typedef struct {
+      |         ^
+   16 |   long mtype;
+   17 |   Process process;
+   18 | } Message;
+      |   __attribute__((aligned(32)))
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:15:9: note: use "__attribute__((aligned(32)))" to align struct 'Message' to 32 bytes
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:20:24: warning: all parameters should be named in a function [hicpp-named-parameter,readability-named-parameter]
+   20 | void clearResources(int);
+      |                        ^
+      |                         /*signum*/
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:26:5: warning: variable 'msgqid' is non-const and globally accessible, consider making it const [cppcoreguidelines-avoid-non-const-global-variables]
+   26 | int msgqid = -1;
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:27:1: warning: no header providing "pid_t" is directly included [misc-include-cleaner]
+    2 | pid_t schedulerPid = -1;
+      | ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:27:7: warning: variable 'schedulerPid' is non-const and globally accessible, consider making it const [cppcoreguidelines-avoid-non-const-global-variables]
+   27 | pid_t schedulerPid = -1;
+      |       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:28:7: warning: variable 'clockPid' is non-const and globally accessible, consider making it const [cppcoreguidelines-avoid-non-const-global-variables]
+   28 | pid_t clockPid = -1;
+      |       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:35:3: warning: the value returned by this function should not be disregarded; neglecting it may lead to errors [cert-err33-c]
+   35 |   signal(SIGINT, clearResources);
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:35:3: note: cast the expression to void to silence this warning
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:35:3: warning: no header providing "signal" is directly included [misc-include-cleaner]
+    2 |   signal(SIGINT, clearResources);
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:35:10: warning: no header providing "SIGINT" is directly included [misc-include-cleaner]
+   35 |   signal(SIGINT, clearResources);
+      |          ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:39:7: warning: variable 'algorithm' is not initialized [cppcoreguidelines-init-variables]
+   39 |   int algorithm;
+      |       ^        
+      |                 = 0
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:43:3: warning: no header providing "printf" is directly included [misc-include-cleaner]
+    2 |   printf("Reading processes from file...\n");
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: warning: 'scanf' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [cert-err34-c]
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: warning: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: note: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: warning: no header providing "scanf" is directly included [misc-include-cleaner]
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:74:9: warning: 'scanf' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [cert-err34-c]
+   74 |     if (scanf("%d", &quantum) != 1) {
+      |         ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:74:9: warning: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+   74 |     if (scanf("%d", &quantum) != 1) {
+      |         ^~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:74:9: note: Call to function 'scanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'scanf_s' in case of C11
+   74 |     if (scanf("%d", &quantum) != 1) {
+      |         ^~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:89:3: warning: no header providing "key_t" is directly included [misc-include-cleaner]
+    2 |   key_t msgkey = ftok(".", 'M');
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:89:18: warning: no header providing "ftok" is directly included [misc-include-cleaner]
+    2 |   key_t msgkey = ftok(".", 'M');
+      |                  ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:90:12: warning: no header providing "msgget" is directly included [misc-include-cleaner]
+    2 |   msgqid = msgget(msgkey, IPC_CREAT | 0644);
+      |            ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:90:27: warning: use of a signed integer operand with a binary bitwise operator [hicpp-signed-bitwise]
+   90 |   msgqid = msgget(msgkey, IPC_CREAT | 0644);
+      |                           ^         ~
+/nix/store/gi4cz4ir3zlwhf1azqfgxqdnczfrwsr7-glibc-2.40-66-dev/include/bits/ipc.h:25:19: note: expanded from macro 'IPC_CREAT'
+   25 | #define IPC_CREAT       01000           /* Create key if key does not exist. */
+      |                         ^~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:90:27: warning: no header providing "IPC_CREAT" is directly included [misc-include-cleaner]
+   90 |   msgqid = msgget(msgkey, IPC_CREAT | 0644);
+      |                           ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:90:39: warning: 0644 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+   90 |   msgqid = msgget(msgkey, IPC_CREAT | 0644);
+      |                                       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:92:5: warning: no header providing "perror" is directly included [misc-include-cleaner]
+   92 |     perror("Error creating message queue");
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:98:14: warning: no header providing "fork" is directly included [misc-include-cleaner]
+    2 |   clockPid = fork();
+      |              ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:101:5: warning: no header providing "execl" is directly included [misc-include-cleaner]
+  101 |     execl("./clk.out", "clk.out", NULL);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:103:5: warning: function is not thread safe [concurrency-mt-unsafe]
+  103 |     exit(-1);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:103:5: warning: no header providing "exit" is directly included [misc-include-cleaner]
+    2 |     exit(-1);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:120:5: warning: multiple declarations in a single statement reduces readability [readability-isolate-declaration]
+  120 |     char algoStr[10], quantumStr[10], msgqStr[10];
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:120:18: warning: 10 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+  120 |     char algoStr[10], quantumStr[10], msgqStr[10];
+      |                  ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:120:34: warning: 10 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+  120 |     char algoStr[10], quantumStr[10], msgqStr[10];
+      |                                  ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:120:47: warning: 10 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+  120 |     char algoStr[10], quantumStr[10], msgqStr[10];
+      |                                               ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:121:5: warning: the value returned by this function should not be disregarded; neglecting it may lead to errors [cert-err33-c]
+  121 |     sprintf(algoStr, "%d", algorithm);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:121:5: note: cast the expression to void to silence this warning
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:121:5: warning: Call to function 'sprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+  121 |     sprintf(algoStr, "%d", algorithm);
+      |     ^~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:121:5: note: Call to function 'sprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11
+  121 |     sprintf(algoStr, "%d", algorithm);
+      |     ^~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:121:5: warning: no header providing "sprintf" is directly included [misc-include-cleaner]
+  121 |     sprintf(algoStr, "%d", algorithm);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:122:5: warning: the value returned by this function should not be disregarded; neglecting it may lead to errors [cert-err33-c]
+  122 |     sprintf(quantumStr, "%d", quantum);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:122:5: note: cast the expression to void to silence this warning
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:122:5: warning: Call to function 'sprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+  122 |     sprintf(quantumStr, "%d", quantum);
+      |     ^~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:122:5: note: Call to function 'sprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11
+  122 |     sprintf(quantumStr, "%d", quantum);
+      |     ^~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:123:5: warning: the value returned by this function should not be disregarded; neglecting it may lead to errors [cert-err33-c]
+  123 |     sprintf(msgqStr, "%d", msgqid);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:123:5: note: cast the expression to void to silence this warning
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:123:5: warning: Call to function 'sprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+  123 |     sprintf(msgqStr, "%d", msgqid);
+      |     ^~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:123:5: note: Call to function 'sprintf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11
+  123 |     sprintf(msgqStr, "%d", msgqid);
+      |     ^~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:125:5: warning: Untrusted data is passed to a system call (CERT/STR02-C. Sanitize data passed to complex subsystems) [clang-analyzer-optin.taint.GenericTaint]
+  125 |     execl("./scheduler.out", "scheduler.out", algoStr, quantumStr, msgqStr,
+      |     ^                                         ~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:46:7: note: Assuming 'processCount' is not equal to 0
+   46 |   if (processCount == 0) {
+      |       ^~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:46:3: note: Taking false branch
+   46 |   if (processCount == 0) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: note: Taint originated here
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: note: Taint propagated to the 2nd argument
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:7: note: Assuming the condition is false
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:61:3: note: Taking false branch
+   61 |   if (scanf("%d", &algorithm) != 1) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:66:7: note: Assuming 'algorithm' is >= 1
+   66 |   if (algorithm < 1 || algorithm > 4) {
+      |       ^~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:66:7: note: Left side of '||' is false
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:66:24: note: Assuming 'algorithm' is <= 4
+   66 |   if (algorithm < 1 || algorithm > 4) {
+      |                        ^~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:66:3: note: Taking false branch
+   66 |   if (algorithm < 1 || algorithm > 4) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:72:7: note: Assuming 'algorithm' is not equal to 3
+   72 |   if (algorithm == 3) {
+      |       ^~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:72:3: note: Taking false branch
+   72 |   if (algorithm == 3) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:82:14: note: Assuming 'algorithm' is not equal to 4
+   82 |   } else if (algorithm == 4) {
+      |              ^~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:82:10: note: Taking false branch
+   82 |   } else if (algorithm == 4) {
+      |          ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:91:7: note: Assuming the condition is false
+   91 |   if (msgqid == -1) {
+      |       ^~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:91:3: note: Taking false branch
+   91 |   if (msgqid == -1) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:99:7: note: Assuming 'clockPid' is not equal to 0
+   99 |   if (clockPid == 0) {
+      |       ^~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:99:3: note: Taking false branch
+   99 |   if (clockPid == 0) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:104:14: note: Assuming the condition is false
+  104 |   } else if (clockPid == -1) {
+      |              ^~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:104:10: note: Taking false branch
+  104 |   } else if (clockPid == -1) {
+      |          ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:118:7: note: Assuming 'schedulerPid' is equal to 0
+  118 |   if (schedulerPid == 0) {
+      |       ^~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:118:3: note: Taking true branch
+  118 |   if (schedulerPid == 0) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:121:5: note: Taint propagated to the 1st argument
+  121 |     sprintf(algoStr, "%d", algorithm);
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:125:5: note: Untrusted data is passed to a system call (CERT/STR02-C. Sanitize data passed to complex subsystems)
+  125 |     execl("./scheduler.out", "scheduler.out", algoStr, quantumStr, msgqStr,
+      |     ^                                         ~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:128:5: warning: function is not thread safe [concurrency-mt-unsafe]
+  128 |     exit(-1);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:139:3: warning: function is not thread safe [concurrency-mt-unsafe]
+  139 |   sleep(1);
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:139:3: warning: no header providing "sleep" is directly included [misc-include-cleaner]
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:147:3: warning: no header providing "waitpid" is directly included [misc-include-cleaner]
+    2 |   waitpid(schedulerPid, NULL, 0);
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:158:3: warning: no header providing "FILE" is directly included [misc-include-cleaner]
+  158 |   FILE *file = fopen(filename, "r");
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:158:16: warning: no header providing "fopen" is directly included [misc-include-cleaner]
+  158 |   FILE *file = fopen(filename, "r");
+      |                ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:158:32: warning: use 'fopen' mode 'e' to set O_CLOEXEC [android-cloexec-fopen]
+  158 |   FILE *file = fopen(filename, "r");
+      |                                ^~~
+      |                                "re"
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:164:13: warning: 256 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+  164 |   char line[256];
+      |             ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:167:3: warning: kernel performance could be improved by unrolling this loop with a '#pragma unroll' directive [altera-unroll-loops]
+  167 |   while (fgets(line, sizeof(line), file) != NULL && count < MAX_PROCESSES) {
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:167:10: warning: backward branch (while loop) is ID-dependent due to variable reference to 'file' and may cause performance degradation [altera-id-dependent-backward-branch]
+  167 |   while (fgets(line, sizeof(line), file) != NULL && count < MAX_PROCESSES) {
+      |          ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:158:3: note: inferred assignment of ID-dependent value from ID-dependent 
+  158 |   FILE *file = fopen(filename, "r");
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:167:10: warning: no header providing "fgets" is directly included [misc-include-cleaner]
+  167 |   while (fgets(line, sizeof(line), file) != NULL && count < MAX_PROCESSES) {
+      |          ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:174:18: warning: 'sscanf' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [cert-err34-c]
+  174 |     int result = sscanf(line, "%d\t%d\t%d\t%d", &processes[count].id,
+      |                  ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:174:18: warning: Call to function 'sscanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sscanf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
+  174 |     int result = sscanf(line, "%d\t%d\t%d\t%d", &processes[count].id,
+      |                  ^~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:174:18: note: Call to function 'sscanf' is insecure as it does not provide security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sscanf_s' in case of C11
+  174 |     int result = sscanf(line, "%d\t%d\t%d\t%d", &processes[count].id,
+      |                  ^~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:174:18: warning: no header providing "sscanf" is directly included [misc-include-cleaner]
+  174 |     int result = sscanf(line, "%d\t%d\t%d\t%d", &processes[count].id,
+      |                  ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:186:3: warning: the value returned by this function should not be disregarded; neglecting it may lead to errors [cert-err33-c]
+  186 |   fclose(file);
+      |   ^~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:186:3: note: cast the expression to void to silence this warning
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:186:3: warning: no header providing "fclose" is directly included [misc-include-cleaner]
+  186 |   fclose(file);
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:191:52: warning: 2 adjacent parameters of 'sendProcessesToScheduler' of similar type ('int') are easily swapped by mistake [bugprone-easily-swappable-parameters]
+  191 | void sendProcessesToScheduler(Process processes[], int count, int msgqid) {
+      |                                                    ^~~~~~~~~~~~~~~~~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:191:56: note: the first parameter in the range is 'count'
+  191 | void sendProcessesToScheduler(Process processes[], int count, int msgqid) {
+      |                                                        ^~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:191:67: note: the last parameter in the range is 'msgqid'
+  191 | void sendProcessesToScheduler(Process processes[], int count, int msgqid) {
+      |                                                                   ^~~~~~
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:193:7: warning: variable 'currentTime' is not initialized [cppcoreguidelines-init-variables]
+  193 |   int currentTime;
+      |       ^          
+      |                   = 0
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:199:5: warning: kernel performance could be improved by unrolling this loop with a '#pragma unroll' directive [altera-unroll-loops]
+  199 |     while (currentProcess < count &&
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:206:11: warning: no header providing "msgsnd" is directly included [misc-include-cleaner]
+  206 |       if (msgsnd(msgqid, &msg, sizeof(Process), 0) == -1) {
+      |           ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:218:7: warning: no header providing "usleep" is directly included [misc-include-cleaner]
+  218 |       usleep(100000); // 100ms
+      |       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:218:14: warning: 100000 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+  218 |       usleep(100000); // 100ms
+      |              ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:239:9: warning: no header providing "msgctl" is directly included [misc-include-cleaner]
+  239 |     if (msgctl(msgqid, IPC_RMID, NULL) == -1) {
+      |         ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:239:24: warning: no header providing "IPC_RMID" is directly included [misc-include-cleaner]
+  239 |     if (msgctl(msgqid, IPC_RMID, NULL) == -1) {
+      |                        ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:248:5: warning: no header providing "kill" is directly included [misc-include-cleaner]
+  248 |     kill(clockPid, SIGINT);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process_generator.c:259:5: warning: function is not thread safe [concurrency-mt-unsafe]
+  259 |     exit(0);
+      |     ^

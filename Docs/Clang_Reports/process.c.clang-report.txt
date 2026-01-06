@@ -1,0 +1,49 @@
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:1:1: warning: included header headers.h is not used directly [misc-include-cleaner]
+    1 | #include "../include/headers.h"
+      | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    2 | #include <unistd.h>
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:2:1: warning: #includes are not sorted properly [llvm-include-order]
+    2 | #include <unistd.h>
+      | ^
+note: this fix will not be applied because it overlaps with another fix
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:3:1: warning: included header signal.h is not used directly [misc-include-cleaner]
+    3 | #include <signal.h>
+      | ^~~~~~~~~~~~~~~~~~~
+    4 | 
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:10:23: warning: 'atoi' used to convert a string to an integer value, but function will not report conversion errors; consider using 'strtol' instead [cert-err34-c]
+   10 |   int remainingtime = atoi(argv[1]);
+      |                       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:10:23: warning: no header providing "atoi" is directly included [misc-include-cleaner]
+    2 | #include <unistd.h>
+    3 | #include <signal.h>
+    4 | 
+    5 | int main(int argc, char *argv[]) {
+    6 |   if (argc < 2) {
+    7 |     return -1;
+    8 |   }
+    9 | 
+   10 |   int remainingtime = atoi(argv[1]);
+      |                       ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:12:3: warning: no header providing "printf" is directly included [misc-include-cleaner]
+    2 | #include <unistd.h>
+    3 | #include <signal.h>
+    4 | 
+    5 | int main(int argc, char *argv[]) {
+    6 |   if (argc < 2) {
+    7 |     return -1;
+    8 |   }
+    9 | 
+   10 |   int remainingtime = atoi(argv[1]);
+   11 |   
+   12 |   printf("Process started with remaining time: %d (PID: %d)\n", 
+      |   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:19:5: warning: kernel performance could be improved by unrolling this loop with a '#pragma unroll' directive [altera-unroll-loops]
+   19 |     for (volatile long i = 0; i < 1000000; i++);
+      |     ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:19:35: warning: 1000000 is a magic number; consider replacing it with a named constant [cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers]
+   19 |     for (volatile long i = 0; i < 1000000; i++);
+      |                                   ^
+/home/masrkai/Documents/College/Current/OS/Development/src/process.c:19:48: warning: statement should be inside braces [hicpp-braces-around-statements,readability-braces-around-statements]
+   19 |     for (volatile long i = 0; i < 1000000; i++);
+      |                                                ^
+      |                                                 {
