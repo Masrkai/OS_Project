@@ -35,7 +35,7 @@ void initClk() {
   key_t key;
   int attempts = 0;
   const int MAX_ATTEMPTS = 30; // Wait up to 30 seconds
-  
+
   // Wait for the clock to create the key file
   while (!keyfile && attempts < MAX_ATTEMPTS) {
     keyfile = fopen(KEY_FILE, "r");
@@ -47,13 +47,13 @@ void initClk() {
       attempts++;
     }
   }
-  
+
   if (!keyfile) {
     fprintf(stderr, "Error: Clock not initialized after %d seconds!\n", MAX_ATTEMPTS);
     fprintf(stderr, "Make sure to start clk first.\n");
     exit(-1);
   }
-  
+
   // Read the key from file
   if (fscanf(keyfile, "%d", &key) != 1) {
     fclose(keyfile);
@@ -61,21 +61,21 @@ void initClk() {
     exit(-1);
   }
   fclose(keyfile);
-  
+
   // Get the shared memory segment
   int shmid = shmget(key, 4, 0444);
   if (shmid == -1) {
     perror("Error in shmget");
     exit(-1);
   }
-  
+
   // Attach to shared memory
   shmaddr = (int *)shmat(shmid, (void *)0, 0);
   if ((long)shmaddr == -1) {
     perror("Error in attaching the shm!");
     exit(-1);
   }
-  
+
   printf("Successfully connected to clock (key: %d)\n", key);
 }
 
