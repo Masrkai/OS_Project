@@ -1,10 +1,10 @@
-## Key SJN Algorithm Features:
+## Key SJN Algorithm Features
 
-1. **Non-Preemptive Nature**: 
+1. **Non-Preemptive Nature**:
    - If a process is already running → Let it continue until completion
    - No interruption of running processes (major difference from preemptive HPF)
 
-2. **Shortest Burst Time Selection**: 
+2. **Shortest Burst Time Selection**:
    - Scans all processes in the ready queue
    - Compares **total burst time** (total required CPU time)
    - Selects the process with the shortest execution time
@@ -17,7 +17,7 @@
    - No process is currently running (CPU is idle)
    - A process just completed
 
-## Key Differences from Other Algorithms:
+## Key Differences from Other Algorithms
 
 - **vs HPF**: Uses burst time instead of priority, and is non-preemptive
 - **vs RR**: No time quantum, processes run to completion
@@ -26,7 +26,6 @@
 **Advantage**: Minimizes average waiting time when you know job lengths in advance
 
 **Disadvantage**: Can cause starvation for long jobs if short jobs keep arriving!
-
 
 ```mermaid
 

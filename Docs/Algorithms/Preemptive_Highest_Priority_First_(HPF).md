@@ -1,4 +1,4 @@
-## Key Algorithm Steps:
+## Key Algorithm Steps
 
 1. **Input Processing**: Takes the ready queue and current running process as input
 
@@ -19,8 +19,6 @@
 6. **Output**: Returns the selected process and a preemption flag indicating whether context switching is needed
 
 This algorithm ensures that at every scheduling decision point, the process with the highest priority gets CPU time, even if it means preempting a currently running lower-priority process!
-
-
 
 ```mermaid
 
@@ -86,8 +84,3 @@ graph TD
     style Return1 fill:#6a1b9a,color:#fff
     style Return2 fill:#6a1b9a,color:#fff
 ```
-
-
-
-
-

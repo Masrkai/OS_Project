@@ -27,6 +27,7 @@ Project Root
 ## Compiler Configuration
 
 ### Base Compiler
+
 ```makefile
 CC = gcc
 ```
@@ -34,6 +35,7 @@ CC = gcc
 **Why GCC**: Standard C compiler with excellent optimization and debugging support
 
 ### Release Flags
+
 ```makefile
 CFLAGS_RELEASE = -O2 -Wall -Wextra
 ```
@@ -49,6 +51,7 @@ CFLAGS_RELEASE = -O2 -Wall -Wextra
 **Use Case**: Production builds, normal execution
 
 ### Debug Flags
+
 ```makefile
 CFLAGS_DEBUG = -O0 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic
 ```
@@ -70,6 +73,7 @@ CFLAGS_DEBUG = -O0 -g3 -Wall -Wextra -fno-omit-frame-pointer -rdynamic
 **Use Case**: Development, debugging, performance profiling with `perf`
 
 ### Linker Flags
+
 ```makefile
 LDFLAGS_SCHEDULER = -lm
 ```
@@ -81,6 +85,7 @@ LDFLAGS_SCHEDULER = -lm
 ### Master Targets
 
 #### `make all`
+
 **Purpose**: Build everything (default target)
 
 **Execution Order**:
@@ -92,6 +97,7 @@ LDFLAGS_SCHEDULER = -lm
 **When to Use**: Initial build, full rebuild after major changes
 
 #### `make help`
+
 **Purpose**: Display available targets and usage
 
 **Output**: Formatted help text explaining all targets
@@ -99,6 +105,7 @@ LDFLAGS_SCHEDULER = -lm
 ### Scheduler Build Targets
 
 #### `make scheduler`
+
 **Purpose**: Build both release and debug versions
 
 **Dependencies**: Calls `make release` and `make debug`
@@ -106,17 +113,20 @@ LDFLAGS_SCHEDULER = -lm
 **Result**: Two complete sets of binaries in separate directories
 
 #### `make release`
+
 **Purpose**: Build optimized production binaries
 
 **Build Process**:
 
 1. **Create Directories**
+
    ```bash
    mkdir -p build/release
    mkdir -p build/release/objects
    ```
 
 2. **Compile Standalone Executables** (direct source → binary)
+
    ```makefile
    gcc -O2 -Wall -Wextra src/clk.c -o build/release/clk.out
    gcc -O2 -Wall -Wextra src/process.c -o build/release/process.out
@@ -127,6 +137,7 @@ LDFLAGS_SCHEDULER = -lm
    **Why Direct Compilation**: These are simple programs with no shared dependencies
 
 3. **Compile Scheduler Components** (source → object files)
+
    ```makefile
    gcc -O2 -Wall -Wextra -c src/scheduler.c -o build/release/objects/schedule.o
    gcc -O2 -Wall -Wextra -c src/schedulers/rr_scheduler.c -o build/release/objects/rr_scheduler.o
@@ -140,6 +151,7 @@ LDFLAGS_SCHEDULER = -lm
    - Object files contain compiled machine code but are not executable
 
 4. **Link Scheduler** (object files → executable)
+
    ```makefile
    gcc -O2 -Wall -Wextra \
        build/release/objects/schedule.o \
@@ -165,6 +177,7 @@ LDFLAGS_SCHEDULER = -lm
 - `scheduler.out` (scheduler with all algorithms)
 
 #### `make debug`
+
 **Purpose**: Build with debugging symbols and profiling support
 
 **Build Process**: Identical to release but with `CFLAGS_DEBUG`
@@ -181,6 +194,7 @@ LDFLAGS_SCHEDULER = -lm
 ### Run Target
 
 #### `make run`
+
 **Purpose**: Execute the release build process generator
 
 **Command**: `./build/release/process_generator.out`
@@ -197,6 +211,7 @@ LDFLAGS_SCHEDULER = -lm
 ## Test Targets
 
 ### `make tests`
+
 **Purpose**: Build unit tests using Criterion framework
 
 **Dependencies**: Requires Criterion library installed
@@ -204,6 +219,7 @@ LDFLAGS_SCHEDULER = -lm
 **Build Process**:
 
 1. **Extract Criterion Flags**
+
    ```makefile
    CRITERION_FLAGS = $(shell pkg-config --cflags --libs criterion)
    CFLAGS_CRITERION = $(CFLAGS_BASE) $(filter -I%, $(CRITERION_FLAGS))
@@ -216,6 +232,7 @@ LDFLAGS_SCHEDULER = -lm
    - `filter`: Extracts specific flag types
 
 2. **Compile Test Executables**
+
    ```makefile
    gcc $(CFLAGS_CRITERION) test/test_clk.c -o build/tests/test_clock $(LDFLAGS_CRITERION)
    gcc $(CFLAGS_CRITERION) test/test_process.c -o build/tests/test_process $(LDFLAGS_CRITERION)
@@ -231,6 +248,7 @@ LDFLAGS_SCHEDULER = -lm
 ## GTK4 GUI Target
 
 ### `make gtk`
+
 **Purpose**: Build GTK4 graphical interface
 
 **Dependencies**: Requires GTK4 library installed
@@ -238,6 +256,7 @@ LDFLAGS_SCHEDULER = -lm
 **Build Process**:
 
 1. **Extract GTK4 Flags**
+
    ```makefile
    GTK4_FLAGS = $(shell pkg-config --cflags --libs gtk4)
    CFLAGS_GTK4 = $(CFLAGS_BASE) $(filter -I% -mfpmath=% -msse%, $(GTK4_FLAGS))
@@ -249,17 +268,20 @@ LDFLAGS_SCHEDULER = -lm
    - `-msse`: Enable SSE instruction set
 
 2. **Create Build Directories**
+
    ```makefile
    mkdir -p build/GUI
    mkdir -p build/GUI/objects
    ```
 
 3. **Compile GUI Source**
+
    ```makefile
    gcc $(CFLAGS_GTK4) -c UI/dark.c -o build/GUI/objects/dark.o
    ```
 
 4. **Link GUI Application**
+
    ```makefile
    gcc build/GUI/objects/dark.o -o build/GUI/dark $(LDFLAGS_GTK4)
    ```
@@ -271,6 +293,7 @@ LDFLAGS_SCHEDULER = -lm
 ## Clean Targets
 
 ### `make clean`
+
 **Purpose**: Remove all build artifacts
 
 **Actions**:
@@ -281,18 +304,22 @@ LDFLAGS_SCHEDULER = -lm
 **Complete Cleanup**: Ensures fresh build on next `make`
 
 ### `make clean-scheduler`
+
 **Purpose**: Remove scheduler build outputs
 
 **Actions**:
+
 ```bash
 rm -rf build/
 rm -f processes.txt
 ```
 
 ### `make clean-tests`
+
 **Purpose**: Remove test and GTK build artifacts
 
 **Actions**:
+
 ```bash
 rm -f *.o unit_tests dark compile_commands.json
 ```
@@ -307,6 +334,7 @@ rm -f *.o unit_tests dark compile_commands.json
 ## Compilation Stages Explained
 
 ### Stage 1: Preprocessing
+
 **Command**: `gcc -E source.c`
 
 **Actions**:
@@ -319,6 +347,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Output**: Expanded source code (still C, just larger)
 
 ### Stage 2: Compilation
+
 **Command**: `gcc -S source.c` (or implicit with `-c`)
 
 **Actions**:
@@ -331,6 +360,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Output**: Assembly language file (`.s`)
 
 ### Stage 3: Assembly
+
 **Command**: `gcc -c source.c` or `as source.s`
 
 **Actions**:
@@ -342,6 +372,7 @@ rm -f *.o unit_tests dark compile_commands.json
 **Output**: Object file (`.o`) - binary but not executable
 
 ### Stage 4: Linking
+
 **Command**: `gcc obj1.o obj2.o -o program`
 
 **Actions**:
@@ -357,6 +388,7 @@ rm -f *.o unit_tests dark compile_commands.json
 ## Understanding Object Files vs Executables
 
 ### Object Files (.o)
+
 ```
 schedule.o contains:
 - Compiled machine code for scheduler.c functions
@@ -365,6 +397,7 @@ schedule.o contains:
 ```
 
 ### Linking Process
+
 ```
 Linker combines:
   schedule.o         (provides: main, enqueue, dequeue)
@@ -380,7 +413,9 @@ Linker combines:
 ## Dependency Management
 
 ### Implicit Dependencies
+
 Make tracks file modification times:
+
 ```
 If scheduler.c newer than schedule.o:
   → Recompile schedule.o
@@ -395,17 +430,20 @@ If only hpf_scheduler.c changed:
 **Benefit**: Faster incremental builds
 
 ### Directory Dependencies
+
 ```makefile
 $(RELEASE_DIR):
     mkdir -p $(RELEASE_DIR)
 ```
 
 **Pipe `|` Operator** (Order-only dependency):
+
 ```makefile
 target: dependencies | order-only-dependencies
 ```
 
 **Example**:
+
 ```makefile
 build/release/clk.out: src/clk.c | $(RELEASE_DIR)
 ```
@@ -415,6 +453,7 @@ Means: Build directory must exist, but don't rebuild if directory timestamp chan
 ## Optimization Levels Comparison
 
 ### `-O0` (Debug)
+
 - No optimization
 - Fastest compilation
 - Largest binaries
@@ -422,12 +461,14 @@ Means: Build directory must exist, but don't rebuild if directory timestamp chan
 - Slowest execution
 
 ### `-O1` (Basic)
+
 - Simple optimizations
 - Minimal code size reduction
 - Debugging still reasonable
 - Moderate speed improvement
 
 ### `-O2` (Release - Used in Project)
+
 - Aggressive optimization
 - Function inlining
 - Loop unrolling
@@ -436,6 +477,7 @@ Means: Build directory must exist, but don't rebuild if directory timestamp chan
 - Debugging difficult
 
 ### `-O3` (Maximum)
+
 - All `-O2` optimizations
 - Aggressive loop transformations
 - Automatic vectorization
@@ -443,21 +485,25 @@ Means: Build directory must exist, but don't rebuild if directory timestamp chan
 - Highest speed (10-20% over -O2)
 
 ### `-Os` (Size)
+
 - Optimize for size
 - Useful for embedded systems
 
 ### `-Og` (Debug with optimization)
+
 - Optimize while preserving debuggability
 - Good compromise for development
 
 ## Build Automation Flow
 
 ### Initial Build
+
 ```bash
 make all
 ```
 
 **Execution Sequence**:
+
 ```
 1. make scheduler
    ├─ make release
@@ -487,12 +533,14 @@ make all
 ```
 
 ### Incremental Build
+
 ```bash
 # Modify only hpf_scheduler.c
 make release
 ```
 
 **Smart Rebuild**:
+
 ```
 ✓ Skip: clk.c (unchanged)
 ✓ Skip: process.c (unchanged)
@@ -515,17 +563,20 @@ make release
 **Purpose**: Provides compiler/linker flags for installed libraries
 
 **Example Query**:
+
 ```bash
 pkg-config --cflags --libs gtk4
 ```
 
 **Output**:
+
 ```
 -I/usr/include/gtk-4.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
 -L/usr/lib -lgtk-4 -lgdk-4 -lgobject-2.0 -lglib-2.0
 ```
 
 **Makefile Integration**:
+
 ```makefile
 GTK4_FLAGS = $(shell pkg-config --cflags --libs gtk4)
 ```
@@ -551,47 +602,59 @@ GTK4_FLAGS = $(shell pkg-config --cflags --libs gtk4)
 ## Best Practices Demonstrated
 
 ### 1. Separate Build Directories
+
 **Benefit**: Clean separation of release/debug/test builds
 
 ### 2. Object File Caching
+
 **Benefit**: Fast incremental builds
 
 ### 3. Modular Compilation
+
 **Benefit**: Each algorithm in separate file, easy to add/remove
 
 ### 4. Flag Isolation
+
 **Benefit**: Different flags for different targets (release/debug/test)
 
 ### 5. Automatic Directory Creation
+
 **Benefit**: No manual setup required
 
 ### 6. Help Target
+
 **Benefit**: Self-documenting Makefile
 
 ### 7. Clean Targets
+
 **Benefit**: Easy reset to pristine state
 
 ## Common Build Issues & Solutions
 
 ### Issue: "command not found"
+
 **Cause**: Library not installed
 **Solution**: `sudo apt install libgtk-4-dev criterion-dev`
 
 ### Issue: Linking errors
+
 **Cause**: Object files out of date
 **Solution**: `make clean && make`
 
 ### Issue: Permission denied
+
 **Cause**: Executable bit not set
 **Solution**: `chmod +x build/release/*.out`
 
 ### Issue: Shared memory errors at runtime
+
 **Cause**: Previous run didn't clean up
 **Solution**: Remove `/dev/shm/*` files or reboot
 
 ## Development Workflow
 
 ### Standard Development Cycle
+
 ```bash
 # 1. Clean build
 make clean
@@ -621,6 +684,7 @@ time ./build/release/process_generator.out
 ```
 
 ### Quick Test Cycle
+
 ```bash
 make release && cd build/release && ./test_generator.out && ./process_generator.out
 ```

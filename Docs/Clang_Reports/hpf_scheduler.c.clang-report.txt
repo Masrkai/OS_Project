@@ -1,9 +1,0 @@
-/home/masrkai/Documents/College/Current/OS/Development/src/schedulers/hpf_scheduler.c:9:5: warning: kernel performance could be improved by unrolling this loop with a '#pragma unroll' directive [altera-unroll-loops]
-    9 |     while (node != NULL) {
-      |     ^
-/home/masrkai/Documents/College/Current/OS/Development/src/schedulers/hpf_scheduler.c:9:12: warning: backward branch (while loop) is ID-dependent due to variable reference to 'node' and may cause performance degradation [altera-id-dependent-backward-branch]
-    9 |     while (node != NULL) {
-      |            ^
-/home/masrkai/Documents/College/Current/OS/Development/src/schedulers/hpf_scheduler.c:6:5: note: inferred assignment of ID-dependent value from ID-dependent 
-    6 |     QueueNode* node = readyQueue.head;
-      |     ^

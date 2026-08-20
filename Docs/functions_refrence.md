@@ -5,6 +5,7 @@
 ### Shared Memory
 
 #### `shmget(key, size, flags)`
+
 **Purpose**: Allocate shared memory segment
 
 **Parameters**:
@@ -16,12 +17,14 @@
 **Returns**: Shared memory ID or -1 on error
 
 **Usage in Code**:
+
 ```c
 // In clk.c - create 4 bytes for integer
 shmid = shmget(key, 4, IPC_CREAT | 0644);
 ```
 
 #### `shmat(shmid, addr, flags)`
+
 **Purpose**: Attach shared memory to process address space
 
 **Parameters**:
@@ -33,16 +36,19 @@ shmid = shmget(key, 4, IPC_CREAT | 0644);
 **Returns**: Pointer to shared memory or -1
 
 **Usage in Code**:
+
 ```c
 shmaddr = (int *)shmat(shmid, (void *)0, 0);
 ```
 
 #### `shmdt(addr)`
+
 **Purpose**: Detach shared memory from process
 
 **Practice**: Always detach before process exits to prevent memory leaks
 
 #### `shmctl(shmid, cmd, buf)`
+
 **Purpose**: Control operations on shared memory
 
 **Common Commands**:
@@ -50,11 +56,13 @@ shmaddr = (int *)shmat(shmid, (void *)0, 0);
 - `IPC_RMID`: Remove shared memory segment
 
 **Usage in Code**:
+
 ```c
 shmctl(shmid, IPC_RMID, NULL); // Destroy shared memory
 ```
 
 #### `ftok(path, proj_id)`
+
 **Purpose**: Generate unique key from file path and project ID
 
 **Parameters**:
@@ -67,6 +75,7 @@ shmctl(shmid, IPC_RMID, NULL); // Destroy shared memory
 **Practice**: File must exist before calling ftok()
 
 **Usage in Code**:
+
 ```c
 key_t key = ftok(".osclock_marker", 'C');
 ```
@@ -74,16 +83,19 @@ key_t key = ftok(".osclock_marker", 'C');
 ### Message Queues
 
 #### `msgget(key, flags)`
+
 **Purpose**: Create or access message queue
 
 **Returns**: Message queue ID
 
 **Usage in Code**:
+
 ```c
 msgqid = msgget(msgkey, IPC_CREAT | 0644);
 ```
 
 #### `msgsnd(msgqid, msgp, size, flags)`
+
 **Purpose**: Send message to queue
 
 **Parameters**:
@@ -96,6 +108,7 @@ msgqid = msgget(msgkey, IPC_CREAT | 0644);
 **Practice**: Message structure must start with `long mtype`
 
 **Usage in Code**:
+
 ```c
 Message msg;
 msg.mtype = 1;
@@ -104,6 +117,7 @@ msgsnd(msgqid, &msg, sizeof(Process), 0);
 ```
 
 #### `msgrcv(msgqid, msgp, size, type, flags)`
+
 **Purpose**: Receive message from queue
 
 **Parameters**:
@@ -116,6 +130,7 @@ msgsnd(msgqid, &msg, sizeof(Process), 0);
 **Practice**: Use IPC_NOWAIT for polling pattern
 
 **Usage in Code**:
+
 ```c
 // Non-blocking receive of type 1 messages
 while (msgrcv(msgqid, &msg, sizeof(msg.process), 1, IPC_NOWAIT) != -1) {
@@ -124,6 +139,7 @@ while (msgrcv(msgqid, &msg, sizeof(msg.process), 1, IPC_NOWAIT) != -1) {
 ```
 
 #### `msgctl(msgqid, cmd, buf)`
+
 **Purpose**: Control message queue
 
 **Commands**:
@@ -131,6 +147,7 @@ while (msgrcv(msgqid, &msg, sizeof(msg.process), 1, IPC_NOWAIT) != -1) {
 - `IPC_RMID`: Remove queue
 
 **Usage in Code**:
+
 ```c
 msgctl(msgqid, IPC_RMID, NULL);
 ```
@@ -138,6 +155,7 @@ msgctl(msgqid, IPC_RMID, NULL);
 ## Process Management Functions
 
 ### `fork()`
+
 **Purpose**: Create child process (exact copy of parent)
 
 **Returns**:
@@ -149,6 +167,7 @@ msgctl(msgqid, IPC_RMID, NULL);
 **Practice**: Check return value to determine which process you're in
 
 **Usage in Code**:
+
 ```c
 pid_t pid = fork();
 if (pid == 0) {
@@ -161,6 +180,7 @@ if (pid == 0) {
 ```
 
 ### `execl(path, arg0, arg1, ..., NULL)`
+
 **Purpose**: Replace current process image with new program
 
 **Parameters**:
@@ -173,6 +193,7 @@ if (pid == 0) {
 **Practice**: Only returns on error (doesn't return on success)
 
 **Usage in Code**:
+
 ```c
 execl("./process.out", "process.out", remainingTimeStr, NULL);
 perror("Error executing process"); // Only reached if execl fails
@@ -180,6 +201,7 @@ exit(-1);
 ```
 
 ### `wait(status)` / `waitpid(pid, status, options)`
+
 **Purpose**: Wait for child process to change state
 
 **Parameters**:
@@ -191,11 +213,13 @@ exit(-1);
 **Practice**: Prevents zombie processes
 
 **Usage in Code**:
+
 ```c
 waitpid(schedulerPid, NULL, 0); // Wait for specific child
 ```
 
 ### `kill(pid, signal)`
+
 **Purpose**: Send signal to process
 
 **Common Signals**:
@@ -207,6 +231,7 @@ waitpid(schedulerPid, NULL, 0); // Wait for specific child
 - `SIGUSR1`: User-defined signal
 
 **Usage in Code**:
+
 ```c
 kill(pcb->pid, SIGSTOP);  // Preempt process
 kill(pcb->pid, SIGCONT);  // Resume process
@@ -214,20 +239,24 @@ kill(pcb->pid, SIGKILL);  // Terminate process
 ```
 
 ### `signal(signum, handler)`
+
 **Purpose**: Register signal handler function
 
 **Practice**: Handler should be simple and set flags, not do heavy work
 
 **Usage in Code**:
+
 ```c
 signal(SIGINT, cleanup);  // Handle Ctrl+C
 signal(SIGUSR1, handleProcessFinish);
 ```
 
 ### `getpid()` / `getpgrp()`
+
 **Purpose**: Get process ID or process group ID
 
 **Usage in Code**:
+
 ```c
 printf("Process PID: %d\n", getpid());
 killpg(getpgrp(), SIGINT); // Kill entire process group
@@ -236,11 +265,13 @@ killpg(getpgrp(), SIGINT); // Kill entire process group
 ## Data Structures & Design Patterns
 
 ### Process Control Block (PCB)
+
 **Purpose**: Maintain all information about a process
 
 **Practice**: Central data structure for process management
 
 **Fields**:
+
 ```c
 typedef struct {
     int id;                 // Unique identifier
@@ -262,6 +293,7 @@ typedef struct {
 ### Queue Implementation (Linked List)
 
 #### Node Structure
+
 ```c
 typedef struct QueueNode {
     PCB* pcb;              // Pointer to process data
@@ -270,6 +302,7 @@ typedef struct QueueNode {
 ```
 
 #### Queue Structure
+
 ```c
 typedef struct {
     QueueNode* head;  // Front of queue
@@ -281,6 +314,7 @@ typedef struct {
 ### Queue Operations
 
 #### `initQueue(Queue* q)`
+
 **Purpose**: Initialize empty queue
 
 **Practice**: Always call before using queue
@@ -294,6 +328,7 @@ void initQueue(Queue* q) {
 ```
 
 #### `enqueue(Queue* q, PCB* pcb)`
+
 **Purpose**: Add element to back of queue
 
 **Algorithm**:
@@ -307,6 +342,7 @@ void initQueue(Queue* q) {
 **Practice**: O(1) operation with tail pointer
 
 #### `dequeue(Queue* q)`
+
 **Purpose**: Remove and return front element
 
 **Algorithm**:
@@ -321,11 +357,13 @@ void initQueue(Queue* q) {
 **Practice**: O(1) operation, check for empty queue
 
 #### `peek(Queue* q)`
+
 **Purpose**: View front element without removing
 
 **Practice**: Read-only operation, useful for lookahead
 
 #### `removeFromQueue(Queue* q, PCB* pcb)`
+
 **Purpose**: Remove specific element from anywhere in queue
 
 **Algorithm**:
@@ -418,6 +456,7 @@ PCB* selectRR() {
 ### Multi-Level Feedback Queue (MLFQ)
 
 **Structure**:
+
 ```c
 #define NUM_QUEUES 3
 static Queue mlfqQueues[NUM_QUEUES];
@@ -425,6 +464,7 @@ static int processQueueLevel[100];
 ```
 
 **Quantum Mapping**:
+
 ```c
 int getMLFQQuantum(int queueLevel) {
     switch (queueLevel) {
@@ -437,6 +477,7 @@ int getMLFQQuantum(int queueLevel) {
 ```
 
 **Selection** (Priority-based):
+
 ```c
 PCB* selectMLFQ() {
     for (int i = 0; i < NUM_QUEUES; i++) {
@@ -449,6 +490,7 @@ PCB* selectMLFQ() {
 ```
 
 **Demotion** (on quantum expiration):
+
 ```c
 void demoteProcess(PCB* pcb) {
     int currentLevel = processQueueLevel[pcb->id];
@@ -466,6 +508,7 @@ void demoteProcess(PCB* pcb) {
 ## File I/O Practices
 
 ### File Opening
+
 ```c
 FILE* file = fopen("filename.txt", "r");
 if (file == NULL) {
@@ -481,6 +524,7 @@ if (file == NULL) {
 - `"a"`: Append
 
 ### Reading Formatted Input
+
 ```c
 fscanf(file, "%d", &value);
 fgets(line, sizeof(line), file);  // Read line
@@ -490,6 +534,7 @@ sscanf(line, "%d\t%d\t%d", &a, &b, &c);  // Parse line
 **Practice**: Check return values to detect errors
 
 ### Writing Output
+
 ```c
 fprintf(file, "At time %d process %d started\n", time, id);
 fflush(file);  // Force write to disk
@@ -498,6 +543,7 @@ fflush(file);  // Force write to disk
 **Practice**: Flush after important writes for immediate visibility
 
 ### Closing Files
+
 ```c
 fclose(file);
 ```
@@ -507,6 +553,7 @@ fclose(file);
 ## Error Handling Practices
 
 ### Checking System Calls
+
 ```c
 if (result == -1) {
     perror("Operation description");
@@ -517,11 +564,13 @@ if (result == -1) {
 **Practice**: Every system call should be checked
 
 ### `perror()` Function
+
 **Purpose**: Print error message with system error description
 
 **Practice**: Provides errno-based error details
 
 ### Defensive Programming
+
 ```c
 if (argc < 2) {
     fprintf(stderr, "Usage: %s <argument>\n", argv[0]);
@@ -534,16 +583,19 @@ if (argc < 2) {
 ## Time & Sleep Functions
 
 ### `sleep(seconds)`
+
 **Purpose**: Suspend execution for specified seconds
 
 **Practice**: Used by clock to create 1-second ticks
 
 ### `usleep(microseconds)`
+
 **Purpose**: Suspend execution for microseconds
 
 **Practice**: Shorter delays for polling loops
 
 **Usage**:
+
 ```c
 usleep(100000);  // 100ms = 0.1 seconds
 usleep(10000);   // 10ms
@@ -552,6 +604,7 @@ usleep(10000);   // 10ms
 ## Logging & Metrics Practices
 
 ### Event Logging Pattern
+
 ```c
 void writeLog(const char* state, PCB* pcb) {
     currentTime = getClk();
@@ -572,6 +625,7 @@ void writeLog(const char* state, PCB* pcb) {
 **Practice**: Structured logging with consistent format
 
 ### Performance Metrics Calculation
+
 ```c
 // CPU Utilization
 double cpuUtil = ((double)totalRuntime / totalTime) * 100;
@@ -589,6 +643,7 @@ double stdWTA = sqrt(variance);
 ## Memory Management Practices
 
 ### Dynamic Allocation
+
 ```c
 QueueNode* node = (QueueNode*)malloc(sizeof(QueueNode));
 if (node == NULL) {
@@ -600,6 +655,7 @@ if (node == NULL) {
 **Practice**: Always check malloc return value
 
 ### Deallocation
+
 ```c
 free(node);
 ```
@@ -607,6 +663,7 @@ free(node);
 **Practice**: Free every malloc to prevent memory leaks
 
 ### Static Arrays
+
 ```c
 PCB processes[MAX_PROCESSES];
 ```
@@ -616,12 +673,14 @@ PCB processes[MAX_PROCESSES];
 ## String Handling
 
 ### String Formatting
+
 ```c
 char buffer[20];
 sprintf(buffer, "%d", value);  // Convert int to string
 ```
 
 ### String Comparison
+
 ```c
 if (strcmp(str1, str2) == 0) {
     // Strings are equal
@@ -633,6 +692,7 @@ if (strcmp(str1, str2) == 0) {
 ## Preprocessor Practices
 
 ### Include Guards
+
 ```c
 #pragma once
 ```
@@ -640,6 +700,7 @@ if (strcmp(str1, str2) == 0) {
 **Practice**: Prevents multiple inclusion of headers
 
 ### Macros
+
 ```c
 #define MAX_PROCESSES 100
 #define SHM_PROJ 'C'
@@ -651,6 +712,7 @@ if (strcmp(str1, str2) == 0) {
 ## Testing & Debugging Practices
 
 ### Test Generator
+
 **Purpose**: Create randomized test cases
 
 **Practice**: Seeded randomness for reproducibility
@@ -660,6 +722,7 @@ srand(seed);  // Use same seed for repeated tests
 ```
 
 ### Debug Printing
+
 ```c
 printf("Process %d: remaining=%d\n", id, remaining);
 ```
@@ -667,6 +730,7 @@ printf("Process %d: remaining=%d\n", id, remaining);
 **Practice**: Verbose logging during development
 
 ### Profiling Scripts
+
 **Purpose**: Performance analysis with flamegraphs
 
 **Tools Used**:
@@ -680,6 +744,7 @@ printf("Process %d: remaining=%d\n", id, remaining);
 ## Security Considerations
 
 ### Kernel Parameter Bypass Script
+
 **Purpose**: Enable profiling by relaxing kernel restrictions
 
 **Parameters Modified**:
