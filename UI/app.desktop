@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Dark App
-Comment=Elegant dark themed application
-Exec=/full/path/to/darkapp
+Name=PrismScheduler
+Comment=PrismScheduler - OS Process Scheduler Simulator
+Exec=/full/path/to/scheduler_gui
 Icon=/full/path/to/Images/app_icon.png
 Terminal=false
 Categories=Utility;

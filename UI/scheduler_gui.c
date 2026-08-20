@@ -424,7 +424,7 @@ void build_ui(void) {
     PangoFontDescription *font;
     
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-    gtk_window_set_title(GTK_WINDOW(window), "Process Scheduler Simulator");
+    gtk_window_set_title(GTK_WINDOW(window), "PrismScheduler - OS Process Scheduler Simulator");
     gtk_window_set_default_size(GTK_WINDOW(window), 900, 700);
     gtk_container_set_border_width(GTK_CONTAINER(window), 10);
     
@@ -434,7 +434,7 @@ void build_ui(void) {
     /* Title */
     title = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(title), 
-        "<span size='x-large' weight='bold'>Process Scheduler Simulator</span>");
+        "<span size='x-large' weight='bold'>PrismScheduler - OS Process Scheduler Simulator</span>");
     gtk_box_pack_start(GTK_BOX(main_box), title, FALSE, FALSE, 5);
     
     /* Configuration frame */

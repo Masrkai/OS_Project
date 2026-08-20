@@ -49,7 +49,7 @@ int main(int argc, char * argv[])
     quantum = atoi(argv[2]);
     msgqid = atoi(argv[3]);
 
-    printf("Scheduler started: Algorithm=%d, Quantum=%d, MsgQID=%d\n",
+    printf("PrismScheduler started: Algorithm=%d, Quantum=%d, MsgQID=%d\n",
            algorithm, quantum, msgqid);
 
     logFile = fopen("scheduler.log", "w");

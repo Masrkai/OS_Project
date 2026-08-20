@@ -1,4 +1,4 @@
-# OS Process Scheduler - System Workflow
+# PrismScheduler - System Workflow
 
 ## Overview
 

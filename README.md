@@ -1,4 +1,8 @@
-## how to run
+# PrismScheduler
+
+An advanced Operating System Process Scheduler simulator featuring multiple scheduling algorithms (Round Robin, HPF, SJN, MLFQ), IPC message queues, shared memory clock, GTK GUI, and automated performance metrics.
+
+## How to run
 
 in case you are using `Nix` please use the shell of `shell.nix` inside the root directory of this project you can do that by running the command
 
@@ -11,6 +15,7 @@ you can run the program using `make` provided by `gnumake` package
 ```bash
 make clean build
 ```
+
 then a folder **if not exist** will be created called `build` where these binaries will be compiled.
 
 ```bash
@@ -40,11 +45,10 @@ the results are random but in all cases a processes.txt file is created resultin
 
 after making the random processes, we will take them and run them through any of the scheduling methods we have implemented inside `schedule.out` by using the `process_generator.out`
 
-
 ```bash
 ./process_generator.out
 ```
 
 after then a log will be created in `build/scheduler.log` so even if you miss the output of the program the logs will still tail you the simulation and lastly there is a `scheduler.pref`
 
-## Now you have run the simulations and hopefully understood how Scheduling the processes works
+Now you have run the simulations and hopefully understood how Scheduling the processes works
